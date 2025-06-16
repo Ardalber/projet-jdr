@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Créer un compte - JDR</title>
+  <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Créer un compte</h1>
+
+    <form id="register-form">
+      <label for="pseudo">Pseudo :</label>
+      <input type="text" id="pseudo" required>
+
+      <label for="password">Mot de passe :</label>
+      <input type="password" id="password" required>
+
+      <label for="confirm">Confirmer le mot de passe :</label>
+      <input type="password" id="confirm" required>
+
+      <label for="role">Rôle :</label>
+      <select id="role" required>
+        <option value="joueur">Joueur</option>
+        <option value="mj">Maître du Jeu</option>
+      </select>
+
+      <button type="submit">Créer le compte</button>
+    </form>
+
+    <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
+
+    <hr>
+    <button id="reset-comptes" style="background-color: crimson;">Réinitialiser tous les comptes</button>
+  </div>
+
+  <script src="../js/register.js"></script>
+</body>
+</html>

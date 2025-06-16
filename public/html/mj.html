@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Préparation MJ</title>
+  <link rel="stylesheet" href="../css/mj.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Préparation MJ</h1>
+
+    <button id="btn-zone-jeu" class="btn-zone">Aller à la zone de jeu</button>
+
+    <section id="zone-upload">
+      <h2>Ajouter des fonds</h2>
+      <button id="btn-add-image">Ajouter une image</button>
+      <input type="file" id="file-input" accept="image/*" style="display:none" />
+      <div id="images-grid"></div>
+    </section>
+
+    <hr />
+
+    <section id="zone-fiches">
+      <h2>Fiches des joueurs</h2>
+      <div id="fiches-list"></div>
+    </section>
+  </div>
+
+  <script src="../js/mj.js"></script>
+</body>
+</html>

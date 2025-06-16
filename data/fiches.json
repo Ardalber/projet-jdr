@@ -1,0 +1,14 @@
+{
+  "admin": {
+    "nom": "Maître Admin",
+    "race": "Humain divin",
+    "classe": "Maître du Jeu",
+    "description": "Celui qui voit tout. 👁"
+  },
+  "joueur1": {
+    "nom": "Aëldor",
+    "race": "Elfe noir",
+    "classe": "Rôdeur",
+    "description": "Fuit la lumière et les responsabilités."
+  }
+}
