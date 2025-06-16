@@ -3,54 +3,9 @@ const fondImage = document.getElementById("fond-image");
 const fondSelecteur = document.getElementById("selecteur-fond");
 const fondSelect = document.getElementById("fond-select");
 const btnMjPage = document.getElementById("btn-mj-page");
+const btnFiche = document.getElementById("btn-fiche");
 
-fondImage.style.position = "absolute";
-fondImage.style.top = "0";
-fondImage.style.left = "0";
-fondImage.style.width = "100%";
-fondImage.style.height = "100%";
-fondImage.style.backgroundSize = "cover";
-fondImage.style.backgroundPosition = "center";
-
-if (role === "mj") {
-  fondSelecteur.style.display = "block";
-  btnMjPage.style.display = "block";
-
-  fetch("/api/zoneImages")
-    .then((res) => res.json())
-    .then((images) => {
-      images.forEach((img, i) => {
-        const option = document.createElement("option");
-        option.value = img.src;
-        option.textContent = img.nom || `Scène ${i + 1}`;
-        fondSelect.appendChild(option);
-      });
-    });
-
-  fondSelect.addEventListener("change", () => {
-    const socketLocal = new WebSocket(`ws://${window.location.host}`);
-    socketLocal.addEventListener("open", () => {
-      socketLocal.send(
-        JSON.stringify({
-          type: "fond",
-          url: fondSelect.value,
-        })
-      );
-      socketLocal.close();
-    });
-  });
-
-  btnMjPage.addEventListener("click", () => {
-    window.location.href = "mj.html";
-  });
-}
-
-// --- Zone dés ---
-const listeDes = document.getElementById("liste-des");
-const selectTypeDe = document.getElementById("select-type-de");
-const selectCouleurDe = document.getElementById("select-couleur-de");
-const btnAjouterDe = document.getElementById("btn-ajouter-de");
-const btnLancerDes = document.getElementById("btn-lancer-des");
+const DEFAULT_BG = "images/default-bg.jpg"; // chemin vers l’image par défaut
 
 let des = [];
 
@@ -98,6 +53,73 @@ function envoyerEtatDes() {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialisation du fond avec image par défaut
+  fondImage.style.position = "absolute";
+  fondImage.style.top = "0";
+  fondImage.style.left = "0";
+  fondImage.style.width = "100%";
+  fondImage.style.height = "100%";
+  fondImage.style.backgroundSize = "cover";
+  fondImage.style.backgroundPosition = "center";
+  fondImage.style.backgroundImage = `url(${DEFAULT_BG})`;
+
+  // Affichage dés
+  afficherDes();
+
+  if (role === "mj") {
+    fondSelecteur.style.display = "block";
+    btnMjPage.style.display = "block";
+
+    // Ajout option "Par défaut" en premier dans la liste
+    const optionDefaut = document.createElement("option");
+    optionDefaut.value = "";
+    optionDefaut.textContent = "Par défaut";
+    fondSelect.appendChild(optionDefaut);
+
+    fetch("/api/zoneImages")
+      .then((res) => res.json())
+      .then((images) => {
+        images.forEach((img, i) => {
+          const option = document.createElement("option");
+          option.value = img.src;
+          option.textContent = img.nom || `Scène ${i + 1}`;
+          fondSelect.appendChild(option);
+        });
+      });
+
+    fondSelect.addEventListener("change", () => {
+      const socketLocal = new WebSocket(`ws://${window.location.host}`);
+      socketLocal.addEventListener("open", () => {
+        socketLocal.send(
+          JSON.stringify({
+            type: "fond",
+            url: fondSelect.value,
+          })
+        );
+        socketLocal.close();
+      });
+    });
+
+    btnMjPage.addEventListener("click", () => {
+      window.location.href = "mj.html";
+    });
+  }
+
+  btnFiche.style.display = "inline-block";
+  btnFiche.addEventListener("click", () => {
+    window.location.href = "fiche.html";
+  });
+});
+
+// --- Zone dés ---
+const listeDes = document.getElementById("liste-des");
+const selectTypeDe = document.getElementById("select-type-de");
+const selectCouleurDe = document.getElementById("select-couleur-de");
+const btnAjouterDe = document.getElementById("btn-ajouter-de");
+const btnLancerDes = document.getElementById("btn-lancer-des");
+const btnSupprimerTout = document.getElementById("btn-supprimer-tout");
+
 btnAjouterDe.onclick = () => {
   const type = parseInt(selectTypeDe.value, 10);
   const couleur = selectCouleurDe.value;
@@ -115,6 +137,16 @@ btnLancerDes.onclick = () => {
     ...d,
     resultat: Math.floor(Math.random() * d.type) + 1,
   }));
+  afficherDes();
+  envoyerEtatDes();
+};
+
+btnSupprimerTout.onclick = () => {
+  if (des.length === 0) {
+    alert("Il n'y a aucun dé à supprimer !");
+    return;
+  }
+  des = [];
   afficherDes();
   envoyerEtatDes();
 };
@@ -137,11 +169,17 @@ socket.addEventListener("message", (event) => {
 
 function gererMessage(data) {
   if (data.type === "fond") {
-    fondImage.style.backgroundImage = `url(${data.url})`;
-    if (role === "mj") {
-      const options = Array.from(fondSelect.options);
-      const match = options.find((opt) => opt.value === data.url);
-      if (match) fondSelect.value = data.url;
+    if (data.url && data.url.trim() !== "") {
+      fondImage.style.backgroundImage = `url(${data.url})`;
+      if (role === "mj") {
+        const options = Array.from(fondSelect.options);
+        const match = options.find((opt) => opt.value === data.url);
+        if (match) fondSelect.value = data.url;
+      }
+    } else {
+      // Aucun fond choisi, on remet le fond par défaut
+      fondImage.style.backgroundImage = `url(${DEFAULT_BG})`;
+      if (role === "mj") fondSelect.value = "";
     }
   }
   if (data.type === "des-mise-a-jour") {
@@ -149,7 +187,3 @@ function gererMessage(data) {
     afficherDes();
   }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  afficherDes();
-});
