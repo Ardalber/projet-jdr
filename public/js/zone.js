@@ -71,12 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fondSelecteur.style.display = "block";
     btnMjPage.style.display = "block";
 
-    // Ajout option "Par défaut" en premier dans la liste
-    const optionDefaut = document.createElement("option");
-    optionDefaut.value = "";
-    optionDefaut.textContent = "Par défaut";
-    fondSelect.appendChild(optionDefaut);
-
     fetch("/api/zoneImages")
       .then((res) => res.json())
       .then((images) => {
@@ -177,7 +171,7 @@ function gererMessage(data) {
         if (match) fondSelect.value = data.url;
       }
     } else {
-      // Aucun fond choisi, on remet le fond par défaut
+      // Si pas d'url fond, on remet le fond par défaut
       fondImage.style.backgroundImage = `url(${DEFAULT_BG})`;
       if (role === "mj") fondSelect.value = "";
     }
