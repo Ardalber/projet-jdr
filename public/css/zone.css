@@ -54,3 +54,122 @@ body {
 #btn-mj-page:hover {
   background: #1976d2;
 }
+
+/* Zone dés */
+
+.zone-des {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 150;
+  font-family: Arial, sans-serif;
+  min-width: 300px;
+  max-width: 600px;
+}
+
+#liste-des {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 36px;
+}
+
+.de-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  user-select: none;
+  color: white;
+}
+
+.de-item span {
+  font-weight: bold;
+}
+
+.de-item button {
+  background: crimson;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.de-noir {
+  background-color: #222;
+}
+
+.de-rouge {
+  background-color: #b22222;
+}
+
+.de-blanc {
+  background-color: #eee;
+  color: #222;
+}
+
+.resultat-de {
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Couleurs résultats selon la couleur du dé */
+.de-noir .resultat-de {
+  color: white;
+}
+
+.de-rouge .resultat-de {
+  color: black;
+}
+
+.de-blanc .resultat-de {
+  color: black;
+}
+
+#controls-des {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+#select-type-de, #select-couleur-de {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#btn-ajouter-de, #btn-lancer-des {
+  background-color: #2196f3;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#btn-ajouter-de:hover, #btn-lancer-des:hover {
+  background-color: #1976d2;
+}

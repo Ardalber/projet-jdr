@@ -28,15 +28,15 @@ if (role === "mj") {
     });
 
   fondSelect.addEventListener("change", () => {
-    const socket = new WebSocket(`ws://${window.location.host}`);
-    socket.addEventListener("open", () => {
-      socket.send(
+    const socketLocal = new WebSocket(`ws://${window.location.host}`);
+    socketLocal.addEventListener("open", () => {
+      socketLocal.send(
         JSON.stringify({
           type: "fond",
           url: fondSelect.value,
         })
       );
-      socket.close();
+      socketLocal.close();
     });
   });
 
@@ -45,6 +45,80 @@ if (role === "mj") {
   });
 }
 
+// --- Zone dés ---
+const listeDes = document.getElementById("liste-des");
+const selectTypeDe = document.getElementById("select-type-de");
+const selectCouleurDe = document.getElementById("select-couleur-de");
+const btnAjouterDe = document.getElementById("btn-ajouter-de");
+const btnLancerDes = document.getElementById("btn-lancer-des");
+
+let des = [];
+
+function afficherDes() {
+  if (!listeDes) return;
+  listeDes.innerHTML = "";
+
+  des.forEach((de, index) => {
+    const div = document.createElement("div");
+    div.className = "de-item de-" + de.couleur;
+
+    const span = document.createElement("span");
+    span.textContent = `D${de.type}`;
+
+    const spanResultat = document.createElement("span");
+    spanResultat.className = "resultat-de";
+    spanResultat.style.marginLeft = "8px";
+    spanResultat.textContent = de.resultat !== undefined ? de.resultat : "";
+
+    const btnSuppr = document.createElement("button");
+    btnSuppr.textContent = "✖";
+    btnSuppr.title = "Supprimer ce dé";
+    btnSuppr.style.userSelect = "none";
+    btnSuppr.onclick = () => {
+      des.splice(index, 1);
+      envoyerEtatDes();
+      afficherDes();
+    };
+
+    div.appendChild(span);
+    div.appendChild(spanResultat);
+    div.appendChild(btnSuppr);
+    listeDes.appendChild(div);
+  });
+}
+
+function envoyerEtatDes() {
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.send(
+      JSON.stringify({
+        type: "des-mise-a-jour",
+        des: des,
+      })
+    );
+  }
+}
+
+btnAjouterDe.onclick = () => {
+  const type = parseInt(selectTypeDe.value, 10);
+  const couleur = selectCouleurDe.value;
+  des.push({ type, couleur });
+  afficherDes();
+  envoyerEtatDes();
+};
+
+btnLancerDes.onclick = () => {
+  if (des.length === 0) {
+    alert("Il n'y a aucun dé à lancer !");
+    return;
+  }
+  des = des.map((d) => ({
+    ...d,
+    resultat: Math.floor(Math.random() * d.type) + 1,
+  }));
+  afficherDes();
+  envoyerEtatDes();
+};
+
 const socket = new WebSocket(`ws://${window.location.host}`);
 
 socket.addEventListener("message", (event) => {
@@ -52,26 +126,30 @@ socket.addEventListener("message", (event) => {
     const reader = new FileReader();
     reader.onload = () => {
       const data = JSON.parse(reader.result);
-      handleMessage(data);
+      gererMessage(data);
     };
     reader.readAsText(event.data);
   } else {
     const data = JSON.parse(event.data);
-    handleMessage(data);
+    gererMessage(data);
   }
 });
 
-function handleMessage(data) {
-  console.log("Message WS reçu :", data);
+function gererMessage(data) {
   if (data.type === "fond") {
     fondImage.style.backgroundImage = `url(${data.url})`;
-
     if (role === "mj") {
       const options = Array.from(fondSelect.options);
       const match = options.find((opt) => opt.value === data.url);
-      if (match) {
-        fondSelect.value = data.url;
-      }
+      if (match) fondSelect.value = data.url;
     }
   }
+  if (data.type === "des-mise-a-jour") {
+    des = data.des || [];
+    afficherDes();
+  }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  afficherDes();
+});
