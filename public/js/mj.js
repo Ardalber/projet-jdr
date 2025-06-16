@@ -4,17 +4,19 @@ const imagesGrid = document.getElementById("images-grid");
 const fichesList = document.getElementById("fiches-list");
 const btnZoneJeu = document.getElementById("btn-zone-jeu");
 
-let images = JSON.parse(localStorage.getItem("zoneImages") || "[]");
+let images = [];
 
-function saveImages() {
-  localStorage.setItem("zoneImages", JSON.stringify(images));
+async function loadImages() {
+  const res = await fetch("/api/zoneImages");
+  images = await res.json();
+  displayImages();
 }
 
-function sendMessageFond(url) {
-  const socket = new WebSocket(`ws://${window.location.host}`);
-  socket.addEventListener("open", () => {
-    socket.send(JSON.stringify({ type: "fond", url }));
-    socket.close();
+async function saveImages() {
+  await fetch("/api/zoneImages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(images),
   });
 }
 
@@ -62,15 +64,23 @@ fileInput.addEventListener("change", (e) => {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = (event) => {
+  reader.onload = async (event) => {
     const num = images.length + 1;
     images.push({ src: event.target.result, nom: `Scène ${num}` });
-    saveImages();
+    await saveImages();
     displayImages();
     fileInput.value = "";
   };
   reader.readAsDataURL(file);
 });
+
+function sendMessageFond(url) {
+  const socket = new WebSocket(`ws://${window.location.host}`);
+  socket.addEventListener("open", () => {
+    socket.send(JSON.stringify({ type: "fond", url }));
+    socket.close();
+  });
+}
 
 function displayFiches() {
   const fiches = JSON.parse(localStorage.getItem("fiches") || "{}");
@@ -94,5 +104,5 @@ btnZoneJeu.addEventListener("click", () => {
   window.location.href = "zone.html";
 });
 
-displayImages();
+loadImages();
 displayFiches();

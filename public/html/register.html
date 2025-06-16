@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Créer un compte - JDR</title>
-  <link rel="stylesheet" href="../css/index.css">
+  <meta charset="UTF-8" />
+  <title>Inscription</title>
+  <link rel="stylesheet" href="../css/auth.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Créer un compte</h1>
-
+  <div class="auth-container">
+    <h1>Inscription</h1>
     <form id="register-form">
       <label for="pseudo">Pseudo :</label>
-      <input type="text" id="pseudo" required>
+      <input type="text" id="pseudo" name="pseudo" required />
 
       <label for="password">Mot de passe :</label>
-      <input type="password" id="password" required>
-
-      <label for="confirm">Confirmer le mot de passe :</label>
-      <input type="password" id="confirm" required>
+      <input type="password" id="password" name="password" required />
 
       <label for="role">Rôle :</label>
-      <select id="role" required>
+      <select id="role" name="role" required>
         <option value="joueur">Joueur</option>
         <option value="mj">Maître du Jeu</option>
       </select>
 
-      <button type="submit">Créer le compte</button>
+      <button type="submit">S’inscrire</button>
     </form>
-
-    <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
-
-    <hr>
-    <button id="reset-comptes" style="background-color: crimson;">Réinitialiser tous les comptes</button>
+    <p>Déjà un compte ? <a href="index.html">Connectez-vous ici</a></p>
+    <div id="error-msg" class="error-message"></div>
   </div>
 
   <script src="../js/register.js"></script>

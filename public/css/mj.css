@@ -1,5 +1,3 @@
-/* public/css/mj.css */
-
 body {
   background: #1b1b1b;
   color: white;
@@ -78,7 +76,6 @@ h1, h2 {
   border-radius: 4px;
 }
 
-/* Nouvelle section fiches en grille */
 #zone-fiches {
   background: #2c2c2c;
   padding: 20px;
@@ -108,7 +105,6 @@ h1, h2 {
   font-weight: bold;
 }
 
-/* Bouton aller à la zone de jeu */
 .btn-zone {
   background-color: #2196f3;
   border: none;

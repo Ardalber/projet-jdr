@@ -1,27 +1,33 @@
-// public/js/index.js
+const form = document.getElementById("login-form");
+const errorMsg = document.getElementById("error-msg");
 
-document.getElementById("login-form").addEventListener("submit", async (e) => {
+form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const pseudo = document.getElementById("pseudo").value.trim();
-  const password = document.getElementById("password").value;
+  const pseudo = form.pseudo.value.trim();
+  const password = form.password.value;
+
+  if (!pseudo || !password) {
+    errorMsg.textContent = "Veuillez remplir tous les champs.";
+    return;
+  }
 
   const comptes = JSON.parse(localStorage.getItem("comptes") || "{}");
 
-  if (!comptes[pseudo]) {
-    alert("Utilisateur inconnu.");
+  if (!(pseudo in comptes)) {
+    errorMsg.textContent = "Pseudo inconnu.";
     return;
   }
 
   if (comptes[pseudo].password !== password) {
-    alert("Mot de passe incorrect.");
+    errorMsg.textContent = "Mot de passe incorrect.";
     return;
   }
 
-  // Stocker la session
+  // Connexion réussie : stocker utilisateur courant et rôle
   localStorage.setItem("currentUser", pseudo);
   localStorage.setItem("currentRole", comptes[pseudo].role);
 
-  // Redirection vers fiche perso obligatoirement
+  // Rediriger vers fiche perso
   window.location.href = "fiche.html";
 });

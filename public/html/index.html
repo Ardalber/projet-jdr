@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Connexion - JDR</title>
-  <link rel="stylesheet" href="../css/index.css">
+  <meta charset="UTF-8" />
+  <title>Connexion</title>
+  <link rel="stylesheet" href="../css/auth.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="auth-container">
     <h1>Connexion</h1>
-
     <form id="login-form">
       <label for="pseudo">Pseudo :</label>
-      <input type="text" id="pseudo" name="pseudo" required>
+      <input type="text" id="pseudo" name="pseudo" required />
 
       <label for="password">Mot de passe :</label>
-      <input type="password" id="password" name="password" required>
+      <input type="password" id="password" name="password" required />
 
       <button type="submit">Se connecter</button>
     </form>
-
-    <p>Pas encore de compte ? <a href="register.html">Créer un compte</a></p>
+    <p>Pas encore de compte ? <a href="register.html">Inscrivez-vous ici</a></p>
+    <div id="error-msg" class="error-message"></div>
   </div>
 
   <script src="../js/index.js"></script>
