@@ -1,5 +1,3 @@
-// public/js/mj.js
-
 const btnAddImage = document.getElementById("btn-add-image");
 const fileInput = document.getElementById("file-input");
 const imagesGrid = document.getElementById("images-grid");
@@ -55,12 +53,10 @@ function displayImages() {
   });
 }
 
-// Gestion clic bouton pour ouvrir la fenêtre de fichier
 btnAddImage.addEventListener("click", () => {
   fileInput.click();
 });
 
-// Gestion ajout d’image quand fichier sélectionné
 fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -71,12 +67,11 @@ fileInput.addEventListener("change", (e) => {
     images.push({ src: event.target.result, nom: `Scène ${num}` });
     saveImages();
     displayImages();
-    fileInput.value = ""; // reset input
+    fileInput.value = "";
   };
   reader.readAsDataURL(file);
 });
 
-// Affichage fiches joueurs
 function displayFiches() {
   const fiches = JSON.parse(localStorage.getItem("fiches") || "{}");
   fichesList.innerHTML = "";
@@ -95,7 +90,6 @@ function displayFiches() {
   });
 }
 
-// Bouton aller à la zone de jeu
 btnZoneJeu.addEventListener("click", () => {
   window.location.href = "zone.html";
 });
