@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+# Données locales (simulateurs JSON)
+data/*.json
+
+# Fichiers logs
+*.log
+
+# Dossiers systèmes
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires éditeur
+*.swp
+*.tmp
+
+# Configurations locales VSCode
+.vscode/
