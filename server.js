@@ -93,6 +93,11 @@ wss.on("connection", (ws) => {
         broadcast({ type: "updateDice", des });
         break;
 
+      case "setFond":
+        fondActif = data.fondActif;
+        broadcast({ type: "updateFond", fondActif });
+        break;
+
       case "uploadImage":
         if (!isMJ(ws)) break;
         saveImage(data.name, data.data)
