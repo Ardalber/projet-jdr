@@ -28,8 +28,9 @@ form.addEventListener("submit", (e) => {
   comptes[pseudo] = { password, role };
   localStorage.setItem("comptes", JSON.stringify(comptes));
 
-  // Notifier le serveur WebSocket pour mise à jour
-  const socket = new WebSocket(`ws://${window.location.host}`);
+  // WebSocket sécurisé (wss) si HTTPS
+  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+  const socket = new WebSocket(`${protocol}://${window.location.host}`);
   socket.addEventListener("open", () => {
     socket.send(JSON.stringify({ type: "comptes-mise-a-jour" }));
     socket.close();
@@ -38,6 +39,6 @@ form.addEventListener("submit", (e) => {
   localStorage.setItem("currentUser", pseudo);
   localStorage.setItem("currentRole", role);
 
-  // Rediriger vers fiche perso (ou zone de jeu)
+  // Rediriger vers la fiche personnage
   window.location.href = "fiche.html";
 });
