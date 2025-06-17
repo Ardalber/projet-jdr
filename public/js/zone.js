@@ -11,8 +11,8 @@ const btnSupprimerTout = document.getElementById("btn-supprimer-tout");
 
 const role = localStorage.getItem("currentRole");
 
-// Affichage conditionnel des éléments MJ
-if (role === "MJ") {
+// Affichage conditionnel des éléments MJ (insensible à la casse)
+if (role && role.toLowerCase() === "mj") {
   document.getElementById("btn-mj-page").style.display = "inline-block";
   document.getElementById("selecteur-fond").style.display = "flex";
 }
@@ -36,7 +36,7 @@ let fondActif = "";
 
 ws.addEventListener("open", () => {
   ws.send(JSON.stringify({ type: "getInitialState" }));
-  if (role === "MJ") {
+  if (role && role.toLowerCase() === "mj") {
     ws.send(JSON.stringify({ type: "getImages" }));
   }
 });
@@ -63,7 +63,7 @@ ws.addEventListener("message", (event) => {
       break;
 
     case "imagesList":
-      if (role === "MJ") {
+      if (role && role.toLowerCase() === "mj") {
         const fondSelect = document.getElementById("fond-select");
         fondSelect.innerHTML = "";
         data.images.forEach((img, index) => {
@@ -132,7 +132,7 @@ function supprimerDe(index) {
   ws.send(JSON.stringify({ type: "removeDice", index }));
 }
 
-if (role === "MJ") {
+if (role && role.toLowerCase() === "mj") {
   const fondSelect = document.getElementById("fond-select");
   fondSelect.addEventListener("change", () => {
     const url = fondSelect.value;
