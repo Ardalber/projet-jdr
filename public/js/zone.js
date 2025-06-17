@@ -11,9 +11,19 @@ const btnSupprimerTout = document.getElementById("btn-supprimer-tout");
 
 const role = localStorage.getItem("currentRole");
 
+// Affichage MJ
 if (role && role.toLowerCase() === "mj") {
   document.getElementById("btn-mj-page").style.display = "inline-block";
   document.getElementById("selecteur-fond").style.display = "flex";
+  document.getElementById("btn-fond-par-defaut").style.display = "inline-block";
+
+  // Bouton "Fond par défaut"
+  document.getElementById("btn-fond-par-defaut").addEventListener("click", () => {
+    ws.send(JSON.stringify({
+      type: "setFond",
+      fondActif: "/uploads/default.jpg"
+    }));
+  });
 }
 
 document.getElementById("btn-mj-page").addEventListener("click", () => {
@@ -72,7 +82,7 @@ ws.addEventListener("message", (event) => {
           fondSelect.appendChild(opt);
         });
 
-        // ✅ Forcer l'application du premier fond si présent
+        // Sélection automatique du premier fond
         if (fondSelect.options.length > 0) {
           fondSelect.selectedIndex = 0;
           const url = fondSelect.value;

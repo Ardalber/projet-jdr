@@ -24,6 +24,12 @@ let playerActive = null;
 let fondActif = "";
 let images = []; // { nom, url }
 
+// ✅ Image par défaut toujours présente
+images.push({
+  nom: "Image par défaut",
+  url: "/uploads/default.jpg"
+});
+
 // Diffuser à tous
 function broadcast(data) {
   const message = JSON.stringify(data);
@@ -45,7 +51,6 @@ wss.on("connection", (ws) => {
     }
 
     switch (data.type) {
-
       case "getInitialState":
         ws.send(JSON.stringify({
           type: "initialState",
