@@ -1,71 +1,78 @@
 
-document.addEventListener("DOMContentLoaded", () => {
-  const imageInput = document.getElementById("image-input");
-  const imageList = document.getElementById("image-list");
-  const imageForm = document.getElementById("image-form");
+// public/js/mj.js
 
-  function chargerImages() {
-    fetch("/api/zoneImages")
-      .then(res => res.json())
-      .then(images => {
-        imageList.innerHTML = "";
-        images.forEach((img, index) => {
-          const div = document.createElement("div");
-          div.className = "image-item";
+const ws = new WebSocket(`ws://${window.location.host}`);
 
-          const image = document.createElement("img");
-          image.src = img.src;
-          image.alt = img.nom || `Image ${index + 1}`;
+const inputImage = document.getElementById("input-image");
+const imagesContainer = document.getElementById("images-container");
+const errorMsg = document.getElementById("error-msg");
 
-          const input = document.createElement("input");
-          input.type = "text";
-          input.value = img.nom || `Image ${index + 1}`;
-          input.onchange = () => renommerImage(img.src, input.value);
+let images = [];
 
-          const supprimer = document.createElement("button");
-          supprimer.textContent = "Supprimer";
-          supprimer.onclick = () => supprimerImage(img.src);
+ws.addEventListener("open", () => {
+  ws.send(JSON.stringify({ type: "getImages" }));
+});
 
-          div.appendChild(image);
-          div.appendChild(input);
-          div.appendChild(supprimer);
-          imageList.appendChild(div);
-        });
-      });
+ws.addEventListener("message", (event) => {
+  const data = JSON.parse(event.data);
+
+  if (data.type === "imagesList") {
+    images = data.images;
+    afficherImages();
+  } else if (data.type === "error") {
+    errorMsg.textContent = data.message;
   }
+});
 
-  function renommerImage(src, nom) {
-    fetch("/api/images", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ src, nom }),
-    }).then(() => chargerImages());
-  }
+function afficherImages() {
+  imagesContainer.innerHTML = "";
+  images.forEach((img, index) => {
+    const div = document.createElement("div");
+    div.classList.add("image-item");
 
-  function supprimerImage(src) {
-    fetch("/api/images", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ src }),
-    }).then(() => chargerImages());
-  }
+    const imageElem = document.createElement("img");
+    imageElem.src = img.url;
+    imageElem.alt = img.nom;
+    imageElem.style.maxWidth = "100px";
 
-  imageForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const file = imageInput.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    fetch("/api/images", {
-      method: "POST",
-      body: formData,
-    }).then(() => {
-      imageInput.value = "";
-      chargerImages();
+    const nomInput = document.createElement("input");
+    nomInput.type = "text";
+    nomInput.value = img.nom;
+    nomInput.addEventListener("change", () => {
+      ws.send(JSON.stringify({ type: "renameImage", index, newName: nomInput.value }));
     });
-  });
 
-  chargerImages();
+    const btnSupprimer = document.createElement("button");
+    btnSupprimer.textContent = "Supprimer";
+    btnSupprimer.addEventListener("click", () => {
+      if (confirm("Confirmer la suppression ?")) {
+        ws.send(JSON.stringify({ type: "deleteImage", index }));
+      }
+    });
+
+    div.appendChild(imageElem);
+    div.appendChild(nomInput);
+    div.appendChild(btnSupprimer);
+
+    imagesContainer.appendChild(div);
+  });
+}
+
+inputImage.addEventListener("change", () => {
+  if (inputImage.files.length === 0) return;
+
+  const file = inputImage.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const base64Data = e.target.result;
+
+    ws.send(JSON.stringify({
+      type: "uploadImage",
+      name: file.name,
+      data: base64Data
+    }));
+  };
+
+  reader.readAsDataURL(file);
 });

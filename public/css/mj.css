@@ -1,61 +1,82 @@
+
+/* css/mj.css */
+
 body {
   font-family: Arial, sans-serif;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
+  margin: 20px;
+  background-color: #f9f9f9;
   color: #333;
 }
 
-h1, h2 {
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+button {
+  cursor: pointer;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  margin: 10px 5px 20px 5px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#images-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.image-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  width: 140px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   text-align: center;
 }
 
-#comptes-list {
-  max-height: 300px;
-  overflow-y: auto;
+.image-item img {
+  max-width: 100%;
+  max-height: 90px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.image-item input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  font-size: 14px;
   border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 8px;
-  background: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 8px;
 }
 
-.compte-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.image-item button {
+  background-color: #dc3545;
   padding: 6px 10px;
-  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  margin: 0;
 }
 
-.compte-item button {
-  background: #d32f2f;
-  color: white;
-  border: none;
-  padding: 4px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+.image-item button:hover {
+  background-color: #a71d2a;
+}
+
+#error-msg {
+  text-align: center;
   font-weight: bold;
-  user-select: none;
-  transition: background-color 0.3s ease;
-}
-
-.compte-item button:hover {
-  background: #9a0007;
-}
-
-#btn-zone-jeu {
-  display: block;
-  margin: 0 auto 20px auto;
-  padding: 10px 20px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s ease;
-}
-
-#btn-zone-jeu:hover {
-  background-color: #1976d2;
+  margin-top: 10px;
 }

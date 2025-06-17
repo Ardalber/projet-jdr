@@ -1,190 +1,141 @@
-const role = localStorage.getItem("currentRole");
-const fondImage = document.getElementById("fond-image");
-const fondSelecteur = document.getElementById("selecteur-fond");
-const fondSelect = document.getElementById("fond-select");
-const btnMjPage = document.getElementById("btn-mj-page");
-const btnFiche = document.getElementById("btn-fiche");
 
-const DEFAULT_BG = "images/default-bg.jpg"; // chemin vers l’image par défaut
+// public/js/zone.js
 
+const ws = new WebSocket(`ws://${window.location.host}`);
+
+const zoneJeu = document.querySelector(".zone-jeu");
+const playerList = document.getElementById("player-list");
+const diceList = document.getElementById("dice-list");
+const btnToggleDice = document.getElementById("toggle-dice-btn");
+
+let joueurs = [];
 let des = [];
+let currentUser = localStorage.getItem("currentUser");
+let currentRole = localStorage.getItem("currentRole");
+let playerActive = null;
+let fondActif = ""; // URL de l'image de fond
 
-function supprimerDe(index) {
-  if (index >= 0 && index < des.length) {
-    des.splice(index, 1);
-    afficherDes();
-    envoyerEtatDes();
+ws.addEventListener("open", () => {
+  // Demander état initial (joueurs, dés, fond)
+  ws.send(JSON.stringify({ type: "getInitialState" }));
+});
+
+ws.addEventListener("message", (event) => {
+  const data = JSON.parse(event.data);
+
+  switch (data.type) {
+    case "initialState":
+      joueurs = data.joueurs;
+      des = data.des;
+      playerActive = data.playerActive;
+      fondActif = data.fondActif;
+      majListeJoueurs();
+      majListeDes();
+      setBackgroundImage(fondActif);
+      break;
+
+    case "updatePlayers":
+      joueurs = data.joueurs;
+      playerActive = data.playerActive;
+      majListeJoueurs();
+      break;
+
+    case "updateDice":
+      des = data.des;
+      majListeDes();
+      break;
+
+    case "updateFond":
+      fondActif = data.fondActif;
+      setBackgroundImage(fondActif);
+      break;
+
+    default:
+      console.warn("Message inconnu:", data);
   }
+});
+
+function majListeJoueurs() {
+  playerList.innerHTML = "";
+  joueurs.forEach((joueur) => {
+    if (joueur.role === "MJ") return; // Ne pas afficher le MJ dans la liste
+
+    const li = document.createElement("li");
+    li.textContent = joueur.pseudo;
+
+    // Mettre en surbrillance si joueur actif
+    if (joueur.pseudo === playerActive) {
+      li.style.color = "green";
+      li.style.fontWeight = "bold";
+    }
+
+    // Seul MJ peut changer joueur actif (clic)
+    if (currentRole === "MJ") {
+      li.style.cursor = "pointer";
+      li.addEventListener("click", () => {
+        let nouveauActif = joueur.pseudo === playerActive ? null : joueur.pseudo;
+        ws.send(JSON.stringify({ type: "setPlayerActive", playerActive: nouveauActif }));
+      });
+    }
+
+    playerList.appendChild(li);
+  });
 }
 
-function afficherDes() {
-  if (!listeDes) return;
-  listeDes.innerHTML = "";
+function majListeDes() {
+  diceList.innerHTML = "";
 
   des.forEach((de, index) => {
-    const div = document.createElement("div");
-    div.className = "de-item de-" + de.couleur;
-
-    const span = document.createElement("span");
-    span.textContent = `D${de.type}`;
-
-    const spanResultat = document.createElement("span");
-    spanResultat.className = "resultat-de";
-    spanResultat.style.marginLeft = "8px";
-    spanResultat.textContent = de.resultat !== undefined ? de.resultat : "";
-
-    const btnSuppr = document.createElement("button");
-    btnSuppr.textContent = "✖";
-    btnSuppr.title = "Supprimer ce dé";
-    btnSuppr.style.userSelect = "none";
-    btnSuppr.onclick = () => {
-      supprimerDe(index);
-    };
-
-    div.appendChild(span);
-    div.appendChild(spanResultat);
-    div.appendChild(btnSuppr);
-    listeDes.appendChild(div);
+    const li = document.createElement("li");
+    li.textContent = `Dé ${de.type} : ${de.valeur}`;
+    diceList.appendChild(li);
   });
 }
 
-function envoyerEtatDes() {
-  if (socket.readyState === WebSocket.OPEN) {
-    socket.send(
-      JSON.stringify({
-        type: "des-mise-a-jour",
-        des: des,
-      })
-    );
+function setBackgroundImage(url) {
+  if (!url) {
+    zoneJeu.style.backgroundImage = "";
+    return;
   }
+  zoneJeu.style.backgroundImage = `url(${url})`;
+  zoneJeu.style.backgroundSize = "contain";
+  zoneJeu.style.backgroundRepeat = "no-repeat";
+  zoneJeu.style.backgroundPosition = "center";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialisation du fond avec image par défaut
-  fondImage.style.position = "absolute";
-  fondImage.style.top = "0";
-  fondImage.style.left = "0";
-  fondImage.style.width = "100%";
-  fondImage.style.height = "100%";
-  fondImage.style.backgroundSize = "cover";
-  fondImage.style.backgroundPosition = "center";
-  fondImage.style.backgroundImage = `url(${DEFAULT_BG})`;
-
-  // Affichage dés
-  afficherDes();
-
-  if (role === "mj") {
-    fondSelecteur.style.display = "block";
-    btnMjPage.style.display = "block";
-
-    fetch("/api/zoneImages")
-      .then((res) => res.json())
-      .then((images) => {
-        images.forEach((img, i) => {
-          const option = document.createElement("option");
-          option.value = img.src;
-          option.textContent = img.nom || `Scène ${i + 1}`;
-          fondSelect.appendChild(option);
-        });
-      });
-
-    fondSelect.addEventListener("change", () => {
-      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-      const socketLocal = new WebSocket(`${protocol}://${window.location.host}`);
-      socketLocal.addEventListener("open", () => {
-        socketLocal.send(
-          JSON.stringify({
-            type: "fond",
-            url: fondSelect.value,
-          })
-        );
-        socketLocal.close();
-      });
-    });
-
-    btnMjPage.addEventListener("click", () => {
-      window.location.href = "mj.html";
-    });
-  }
-
-  btnFiche.style.display = "inline-block";
-  btnFiche.addEventListener("click", () => {
-    window.location.href = "fiche.html";
-  });
-});
-
-// --- Zone dés ---
-const listeDes = document.getElementById("liste-des");
-const selectTypeDe = document.getElementById("select-type-de");
-const selectCouleurDe = document.getElementById("select-couleur-de");
-const btnAjouterDe = document.getElementById("btn-ajouter-de");
-const btnLancerDes = document.getElementById("btn-lancer-des");
-const btnSupprimerTout = document.getElementById("btn-supprimer-tout");
-
-btnAjouterDe.onclick = () => {
-  const type = parseInt(selectTypeDe.value, 10);
-  const couleur = selectCouleurDe.value;
-  des.push({ type, couleur });
-  afficherDes();
-  envoyerEtatDes();
-};
-
-btnLancerDes.onclick = () => {
-  if (des.length === 0) {
-    alert("Il n'y a aucun dé à lancer !");
+// Exemples de fonctions de gestion de dés (ajout, lancer, supprimer)
+// Seulement joueur actif peut modifier
+function ajouterDe(type) {
+  if (currentUser !== playerActive) {
+    alert("Seul le joueur actif peut ajouter un dé.");
     return;
   }
-  des = des.map((d) => ({
-    ...d,
-    resultat: Math.floor(Math.random() * d.type) + 1,
-  }));
-  afficherDes();
-  envoyerEtatDes();
-};
+  ws.send(JSON.stringify({ type: "addDice", diceType: type }));
+}
 
-btnSupprimerTout.onclick = () => {
-  if (des.length === 0) {
-    alert("Il n'y a aucun dé à supprimer !");
+function lancerDes() {
+  if (currentUser !== playerActive) {
+    alert("Seul le joueur actif peut lancer les dés.");
     return;
   }
-  des = [];
-  afficherDes();
-  envoyerEtatDes();
-};
+  ws.send(JSON.stringify({ type: "rollDice" }));
+}
 
-const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-const socket = new WebSocket(`${protocol}://${window.location.host}`);
+function supprimerDe(index) {
+  if (currentUser !== playerActive) {
+    alert("Seul le joueur actif peut supprimer un dé.");
+    return;
+  }
+  ws.send(JSON.stringify({ type: "removeDice", index }));
+}
 
-socket.addEventListener("message", (event) => {
-  if (event.data instanceof Blob) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const data = JSON.parse(reader.result);
-      gererMessage(data);
-    };
-    reader.readAsText(event.data);
+// Gestion du bouton réduire/agrandir zone dés
+btnToggleDice.addEventListener("click", () => {
+  if (diceList.style.display === "none") {
+    diceList.style.display = "block";
+    btnToggleDice.textContent = "Réduire";
   } else {
-    const data = JSON.parse(event.data);
-    gererMessage(data);
+    diceList.style.display = "none";
+    btnToggleDice.textContent = "Agrandir";
   }
 });
-
-function gererMessage(data) {
-  if (data.type === "fond") {
-    if (data.url && data.url.trim() !== "") {
-      fondImage.style.backgroundImage = `url(${data.url})`;
-      if (role === "mj") {
-        const options = Array.from(fondSelect.options);
-        const match = options.find((opt) => opt.value === data.url);
-        if (match) fondSelect.value = data.url;
-      }
-    } else {
-      fondImage.style.backgroundImage = `url(${DEFAULT_BG})`;
-      if (role === "mj") fondSelect.value = "";
-    }
-  }
-  if (data.type === "des-mise-a-jour") {
-    des = data.des || [];
-    afficherDes();
-  }
-}

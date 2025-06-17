@@ -3,36 +3,35 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Préparation MJ</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .image-item {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 10px;
-      display: inline-block;
-      vertical-align: top;
-      text-align: center;
-    }
-    .image-item img {
-      max-width: 150px;
-      display: block;
-      margin-bottom: 5px;
-    }
-    .image-item input {
-      display: block;
-      width: 140px;
-      margin: 5px auto;
-    }
-  </style>
+  <title>Page MJ - Gestion des images</title>
+  <link rel="stylesheet" href="css/mj.css" />
 </head>
 <body>
-  <h1>Préparation MJ : Images de scène</h1>
-  <form id="image-form">
-    <input type="file" id="image-input" required />
-    <button type="submit">Ajouter une image</button>
-  </form>
-  <div id="image-list"></div>
+  <h1>Page Maître du Jeu</h1>
+
+  <!-- Bouton unique pour ajouter une image -->
+  <button id="btn-add-image">Ajouter une image</button>
+  <input type="file" id="input-image" accept="image/*" style="display:none" />
+
+  <!-- Conteneur des images -->
+  <div id="images-container"></div>
+
+  <!-- Bouton retour zone -->
+  <button id="btn-retour-zone">Retour à la zone de jeu</button>
+
+  <p id="error-msg" style="color:red"></p>
+
   <script src="js/mj.js"></script>
+  <script>
+    // Déclenche l'input file au clic du bouton
+    document.getElementById("btn-add-image").addEventListener("click", () => {
+      document.getElementById("input-image").click();
+    });
+
+    // Bouton retour à la zone de jeu
+    document.getElementById("btn-retour-zone").addEventListener("click", () => {
+      window.location.href = "zone.html";
+    });
+  </script>
 </body>
 </html>
