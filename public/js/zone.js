@@ -1,11 +1,10 @@
-
 // public/js/zone.js
 
 const ws = new WebSocket(`ws://${window.location.host}`);
 
-const zoneJeu = document.querySelector(".zone-jeu");
-const playerList = document.getElementById("player-list");
-const diceList = document.getElementById("dice-list");
+const zoneJeu = document.getElementById("fond-image"); // ton div fond-image
+const playerList = document.getElementById("player-list"); // ajoute dans zone.html si besoin
+const diceList = document.getElementById("liste-des");
 const btnToggleDice = document.getElementById("toggle-dice-btn");
 
 let joueurs = [];
@@ -15,11 +14,13 @@ let currentRole = localStorage.getItem("currentRole");
 let playerActive = null;
 let fondActif = ""; // URL de l'image de fond
 
+// Connexion WebSocket ouverte
 ws.addEventListener("open", () => {
-  // Demander état initial (joueurs, dés, fond)
+  // Demande l'état initial (joueurs, dés, fond)
   ws.send(JSON.stringify({ type: "getInitialState" }));
 });
 
+// Réception des messages
 ws.addEventListener("message", (event) => {
   const data = JSON.parse(event.data);
 
@@ -55,21 +56,23 @@ ws.addEventListener("message", (event) => {
   }
 });
 
+// Met à jour la liste des joueurs à afficher
 function majListeJoueurs() {
+  // Si tu n'as pas d'élément player-list dans ton HTML, tu peux l'ajouter ou enlever cette fonction
+  if (!playerList) return;
+
   playerList.innerHTML = "";
   joueurs.forEach((joueur) => {
-    if (joueur.role === "MJ") return; // Ne pas afficher le MJ dans la liste
+    if (joueur.role === "MJ") return; // Ne pas afficher le MJ
 
     const li = document.createElement("li");
     li.textContent = joueur.pseudo;
 
-    // Mettre en surbrillance si joueur actif
     if (joueur.pseudo === playerActive) {
       li.style.color = "green";
       li.style.fontWeight = "bold";
     }
 
-    // Seul MJ peut changer joueur actif (clic)
     if (currentRole === "MJ") {
       li.style.cursor = "pointer";
       li.addEventListener("click", () => {
@@ -82,16 +85,30 @@ function majListeJoueurs() {
   });
 }
 
+// Met à jour la liste des dés affichés
 function majListeDes() {
   diceList.innerHTML = "";
 
   des.forEach((de, index) => {
     const li = document.createElement("li");
     li.textContent = `Dé ${de.type} : ${de.valeur}`;
+
+    // Si joueur actif, ajout bouton supprimer
+    if (currentUser === playerActive) {
+      const btnSuppr = document.createElement("button");
+      btnSuppr.textContent = "Supprimer";
+      btnSuppr.style.marginLeft = "10px";
+      btnSuppr.addEventListener("click", () => {
+        supprimerDe(index);
+      });
+      li.appendChild(btnSuppr);
+    }
+
     diceList.appendChild(li);
   });
 }
 
+// Change le fond
 function setBackgroundImage(url) {
   if (!url) {
     zoneJeu.style.backgroundImage = "";
@@ -103,8 +120,7 @@ function setBackgroundImage(url) {
   zoneJeu.style.backgroundPosition = "center";
 }
 
-// Exemples de fonctions de gestion de dés (ajout, lancer, supprimer)
-// Seulement joueur actif peut modifier
+// Ajoute un dé, appelé par les boutons dans zone.html
 function ajouterDe(type) {
   if (currentUser !== playerActive) {
     alert("Seul le joueur actif peut ajouter un dé.");
@@ -113,6 +129,7 @@ function ajouterDe(type) {
   ws.send(JSON.stringify({ type: "addDice", diceType: type }));
 }
 
+// Lance les dés, appelé par bouton
 function lancerDes() {
   if (currentUser !== playerActive) {
     alert("Seul le joueur actif peut lancer les dés.");
@@ -121,6 +138,7 @@ function lancerDes() {
   ws.send(JSON.stringify({ type: "rollDice" }));
 }
 
+// Supprime un dé, appelé par bouton dans la liste
 function supprimerDe(index) {
   if (currentUser !== playerActive) {
     alert("Seul le joueur actif peut supprimer un dé.");
@@ -129,13 +147,14 @@ function supprimerDe(index) {
   ws.send(JSON.stringify({ type: "removeDice", index }));
 }
 
-// Gestion du bouton réduire/agrandir zone dés
+// Réduire/agrandir zone dés
 btnToggleDice.addEventListener("click", () => {
-  if (diceList.style.display === "none") {
-    diceList.style.display = "block";
+  const zoneDes = document.getElementById("zone-des");
+  if (zoneDes.style.display === "none") {
+    zoneDes.style.display = "block";
     btnToggleDice.textContent = "Réduire";
   } else {
-    diceList.style.display = "none";
+    zoneDes.style.display = "none";
     btnToggleDice.textContent = "Agrandir";
   }
 });
