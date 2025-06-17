@@ -9,6 +9,14 @@ const DEFAULT_BG = "images/default-bg.jpg"; // chemin vers l’image par défaut
 
 let des = [];
 
+function supprimerDe(index) {
+  if (index >= 0 && index < des.length) {
+    des.splice(index, 1);
+    afficherDes();
+    envoyerEtatDes();
+  }
+}
+
 function afficherDes() {
   if (!listeDes) return;
   listeDes.innerHTML = "";
@@ -30,9 +38,7 @@ function afficherDes() {
     btnSuppr.title = "Supprimer ce dé";
     btnSuppr.style.userSelect = "none";
     btnSuppr.onclick = () => {
-      des.splice(index, 1);
-      envoyerEtatDes();
-      afficherDes();
+      supprimerDe(index);
     };
 
     div.appendChild(span);
@@ -83,7 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
     fondSelect.addEventListener("change", () => {
-      const socketLocal = new WebSocket(`ws://${window.location.host}`);
+      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+      const socketLocal = new WebSocket(`${protocol}://${window.location.host}`);
       socketLocal.addEventListener("open", () => {
         socketLocal.send(
           JSON.stringify({
@@ -145,7 +152,8 @@ btnSupprimerTout.onclick = () => {
   envoyerEtatDes();
 };
 
-const socket = new WebSocket(`ws://${window.location.host}`);
+const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${protocol}://${window.location.host}`);
 
 socket.addEventListener("message", (event) => {
   if (event.data instanceof Blob) {
@@ -171,7 +179,6 @@ function gererMessage(data) {
         if (match) fondSelect.value = data.url;
       }
     } else {
-      // Si pas d'url fond, on remet le fond par défaut
       fondImage.style.backgroundImage = `url(${DEFAULT_BG})`;
       if (role === "mj") fondSelect.value = "";
     }
