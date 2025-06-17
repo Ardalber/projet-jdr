@@ -17,39 +17,19 @@
 
   <div id="fond-image"></div>
 
-  <!-- Zone contrôles dés -->
-  <div id="dice-controls" style="margin: 10px 0; text-align:center;">
-    <button onclick="ajouterDe('D4')">Ajouter D4</button>
-    <button onclick="ajouterDe('D6')">Ajouter D6</button>
-    <button onclick="ajouterDe('D8')">Ajouter D8</button>
-    <button onclick="ajouterDe('D10')">Ajouter D10</button>
-    <button onclick="ajouterDe('D12')">Ajouter D12</button>
-    <button onclick="ajouterDe('D20')">Ajouter D20</button>
-    <button onclick="lancerDes()">Lancer les dés</button>
-  </div>
-
-  <!-- Zone dés -->
-  <div id="zone-des" class="zone-des">
-    <div id="liste-des"></div>
-
-    <div id="controls-des">
-      <select id="select-type-de">
-        <option value="4">D4</option>
-        <option value="6" selected>D6</option>
-        <option value="8">D8</option>
-        <option value="10">D10</option>
-        <option value="12">D12</option>
-        <option value="20">D20</option>
-      </select>
-
-      <select id="select-couleur-de">
-        <option value="noir" selected>Noir</option>
-        <option value="blanc">Blanc</option>
-        <option value="rouge">Rouge</option>
-      </select>
-
-      <button id="toggle-dice-btn">Réduire</button>
+  <!-- Zone contrôles des dés fixée en bas -->
+  <div id="dice-bar">
+    <div id="dice-controls">
+      <button onclick="ajouterDe('D4')">Ajouter D4</button>
+      <button onclick="ajouterDe('D6')">Ajouter D6</button>
+      <button onclick="ajouterDe('D8')">Ajouter D8</button>
+      <button onclick="ajouterDe('D10')">Ajouter D10</button>
+      <button onclick="ajouterDe('D12')">Ajouter D12</button>
+      <button onclick="ajouterDe('D20')">Ajouter D20</button>
+      <button onclick="lancerDes()">Lancer les dés</button>
     </div>
+
+    <ul id="liste-des"></ul>
   </div>
 
   <script src="js/zone.js"></script>

@@ -55,62 +55,44 @@ body {
   background: #1976d2;
 }
 
-/* Zone dés */
+/* ---- ZONE DES EN BAS ---- */
 
 .zone-des {
   position: fixed;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.85);
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.9);
+  padding: 10px 15px;
+  box-sizing: border-box;
   color: white;
-  padding: 12px 20px;
-  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  gap: 10px;
   z-index: 150;
   font-family: Arial, sans-serif;
-  min-width: 300px;
-  max-width: 600px;
 }
 
 #liste-des {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
   min-height: 36px;
 }
 
+/* Chaque dé */
 .de-item {
   padding: 8px 12px;
   border-radius: 8px;
-  font-weight: bold;
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: default;
-  user-select: none;
-  color: white;
-}
-
-.de-item span {
+  gap: 10px;
   font-weight: bold;
-}
-
-.de-item button {
-  background: crimson;
-  border: none;
   color: white;
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 1rem;
-  user-select: none;
 }
 
+/* Couleurs des dés */
 .de-noir {
   background-color: #222;
 }
@@ -124,25 +106,25 @@ body {
   color: #222;
 }
 
+/* Résultat */
 .resultat-de {
   font-weight: bold;
   min-width: 20px;
   text-align: center;
 }
 
-/* Couleurs résultats selon la couleur du dé */
-.de-noir .resultat-de {
+/* Bouton X sur les dés */
+.de-item button {
+  background: crimson;
+  border: none;
   color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 1rem;
 }
 
-.de-rouge .resultat-de {
-  color: black;
-}
-
-.de-blanc .resultat-de {
-  color: black;
-}
-
+/* Contrôles */
 #controls-des {
   display: flex;
   gap: 10px;
@@ -151,7 +133,8 @@ body {
   width: 100%;
 }
 
-#select-type-de, #select-couleur-de {
+#select-type-de,
+#select-couleur-de {
   padding: 6px 10px;
   border-radius: 6px;
   border: none;
@@ -159,7 +142,8 @@ body {
   cursor: pointer;
 }
 
-#btn-ajouter-de, #btn-lancer-des {
+#btn-ajouter-de,
+#btn-lancer-des {
   background-color: #2196f3;
   border: none;
   color: white;
@@ -170,7 +154,8 @@ body {
   transition: background-color 0.3s ease;
 }
 
-#btn-ajouter-de:hover, #btn-lancer-des:hover {
+#btn-ajouter-de:hover,
+#btn-lancer-des:hover {
   background-color: #1976d2;
 }
 

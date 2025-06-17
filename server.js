@@ -15,16 +15,16 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(express.static(publicDir));
-app.use(express.json({ limit: '10mb' })); // Pour réception base64 images
+app.use(express.json({ limit: '10mb' }));
 
-// Données partagées en mémoire
-let joueurs = []; // { pseudo, role }
-let des = [];     // { type: "D6", valeur: 4 }
+// Données en mémoire
+let joueurs = [];
+let des = []; // { type, couleur, valeur }
 let playerActive = null;
 let fondActif = "";
-let images = [];  // { nom, url }
+let images = []; // { nom, url }
 
-// Diffuser message à tous les clients
+// Diffuser à tous
 function broadcast(data) {
   const message = JSON.stringify(data);
   wss.clients.forEach(client => {
@@ -63,27 +63,34 @@ wss.on("connection", (ws) => {
         break;
 
       case "addDice":
-        if (!canModifyDice(ws)) break;
-        const newDice = { type: data.diceType, valeur: Math.floor(Math.random() * getMax(data.diceType)) + 1 };
+        const newDice = {
+          type: data.diceType,
+          couleur: data.couleur || "noir",
+          valeur: Math.floor(Math.random() * getMax(data.diceType)) + 1
+        };
         des.push(newDice);
         broadcast({ type: "updateDice", des });
         break;
 
       case "rollDice":
-        if (!canModifyDice(ws)) break;
         des = des.map(d => ({
           type: d.type,
+          couleur: d.couleur,
           valeur: Math.floor(Math.random() * getMax(d.type)) + 1
         }));
         broadcast({ type: "updateDice", des });
         break;
 
       case "removeDice":
-        if (!canModifyDice(ws)) break;
         if (data.index >= 0 && data.index < des.length) {
           des.splice(data.index, 1);
           broadcast({ type: "updateDice", des });
         }
+        break;
+
+      case "removeAllDice":
+        des = [];
+        broadcast({ type: "updateDice", des });
         break;
 
       case "uploadImage":
@@ -126,14 +133,9 @@ wss.on("connection", (ws) => {
         console.warn("Message inconnu :", data);
     }
   });
-
-  // Ici, il faudrait aussi gérer l'ajout et suppression des joueurs selon connexion/déconnexion, rôle, etc.
-  // Pour l'instant, c'est simulé.
-
 });
 
-// Fonctions utilitaires
-
+// Fonction pour déterminer le max d’un type de dé
 function getMax(type) {
   switch (type) {
     case "D4": return 4;
@@ -146,31 +148,12 @@ function getMax(type) {
   }
 }
 
-// Pour l'instant, on identifie le MJ par un flag simple :
-// Ici, tu peux améliorer en stockant les ws dans joueurs avec leurs rôles
+// Pour autoriser le MJ (à personnaliser si besoin)
 function isMJ(ws) {
-  // TODO : implémenter authentification / rôle réel
-  // Par exemple, stocker ws dans joueurs et vérifier role === "MJ"
-  return true; // provisoire, autorise tout pour tester
+  return true;
 }
 
-// Vérifier que le client peut modifier les dés
-function canModifyDice(ws) {
-  // TODO : vérifier si c'est le joueur actif
-  return true; // provisoire, autorise tout pour tester
-}
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
-});
-
-// Envoi du fichier index.html en GET / si besoin
-app.get("/", (req, res) => {
-  res.sendFile(path.join(publicDir, "index.html"));
-});
-
-// Fonction pour sauvegarder une image reçue en base64
+// Sauvegarde image en base64 sur disque
 function saveImage(filename, base64Data) {
   return new Promise((resolve, reject) => {
     const matches = base64Data.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -178,7 +161,6 @@ function saveImage(filename, base64Data) {
     const ext = matches[1].split("/")[1];
     const data = matches[2];
     const buffer = Buffer.from(data, "base64");
-    // Générer un nom unique pour éviter écrasement
     const uniqueName = `${Date.now()}-${filename}`;
     const filepath = path.join(uploadDir, uniqueName);
     fs.writeFile(filepath, buffer, (err) => {
@@ -187,3 +169,12 @@ function saveImage(filename, base64Data) {
     });
   });
 }
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"));
+});
