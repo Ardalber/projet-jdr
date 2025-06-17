@@ -7,12 +7,12 @@
 </head>
 <body>
   <div id="top-bar">
-    <div id="selecteur-fond" style="display:none;">
+    <div id="selecteur-fond" style="display: none;">
       <label for="fond-select">Changer de scène :</label>
       <select id="fond-select"></select>
     </div>
-    <button id="btn-mj-page" style="display:none;">Page MJ</button>
-    <button id="btn-fiche" style="display:none;">Fiche</button>
+    <button id="btn-mj-page" style="display: none;">Page MJ</button>
+    <button id="btn-fiche" style="display: none;">Fiche</button>
   </div>
 
   <div id="fond-image"></div>
@@ -44,14 +44,51 @@
   </div>
 
   <script src="js/zone.js"></script>
+
   <script>
     const role = localStorage.getItem("currentRole");
+
     if (role === "MJ") {
       document.getElementById("btn-mj-page").style.display = "inline-block";
+      document.getElementById("selecteur-fond").style.display = "flex";
     }
+
     document.getElementById("btn-mj-page").addEventListener("click", () => {
       window.location.href = "mj.html";
     });
+
+    document.getElementById("btn-fiche").addEventListener("click", () => {
+      window.location.href = "fiche.html";
+    });
+
+    // ⚠️ Synchronisation fond pour MJ
+    const fondSelect = document.getElementById("fond-select");
+    if (role === "MJ") {
+      const ws = new WebSocket(`wss://${window.location.host}`);
+
+      ws.addEventListener("open", () => {
+        ws.send(JSON.stringify({ type: "getImages" }));
+      });
+
+      ws.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "imagesList") {
+          fondSelect.innerHTML = "";
+          data.images.forEach((img, index) => {
+            const opt = document.createElement("option");
+            opt.value = img.url;
+            opt.textContent = `${index + 1} - ${img.nom}`;
+            fondSelect.appendChild(opt);
+          });
+        }
+      });
+
+      fondSelect.addEventListener("change", () => {
+        const url = fondSelect.value;
+        const msg = { type: "setFond", fondActif: url };
+        ws.send(JSON.stringify(msg));
+      });
+    }
   </script>
 </body>
 </html>
