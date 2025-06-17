@@ -44,6 +44,8 @@ imageInput.addEventListener("change", async (e) => {
 function afficherImages() {
   imagesContainer.innerHTML = "";
   images.forEach((img, index) => {
+    if (img.url === "/uploads/default.jpg") return; // ne pas afficher l'image par défaut
+
     const div = document.createElement("div");
     div.classList.add("image-item");
 
@@ -81,12 +83,14 @@ function afficherFiches(fiches) {
   });
 }
 
-// ✅ Déconnexion MJ
+// ✅ Bouton déconnexion
 document.getElementById("btn-deconnexion").addEventListener("click", () => {
   localStorage.removeItem("currentUser");
   localStorage.removeItem("currentRole");
   window.location.href = "index.html";
 });
+
+// ✅ Bouton retour à la zone
 document.getElementById("btn-retour-zone").addEventListener("click", () => {
   window.location.href = "zone.html";
 });
