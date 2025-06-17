@@ -55,7 +55,7 @@ body {
   background: #1976d2;
 }
 
-/* ---- ZONE DES EN BAS ---- */
+/* ---- ZONE DES FIXÉE EN BAS ---- */
 
 .zone-des {
   position: fixed;
@@ -81,7 +81,6 @@ body {
   min-height: 36px;
 }
 
-/* Chaque dé */
 .de-item {
   padding: 8px 12px;
   border-radius: 8px;
@@ -92,7 +91,6 @@ body {
   color: white;
 }
 
-/* Couleurs des dés */
 .de-noir {
   background-color: #222;
 }
@@ -106,14 +104,12 @@ body {
   color: #222;
 }
 
-/* Résultat */
 .resultat-de {
   font-weight: bold;
   min-width: 20px;
   text-align: center;
 }
 
-/* Bouton X sur les dés */
 .de-item button {
   background: crimson;
   border: none;
@@ -124,7 +120,6 @@ body {
   font-size: 1rem;
 }
 
-/* Contrôles */
 #controls-des {
   display: flex;
   gap: 10px;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Zone de jeu</title>
-  <link rel="stylesheet" href="../css/zone.css" />
+  <link rel="stylesheet" href="css/zone.css" />
 </head>
 <body>
   <div id="top-bar">
@@ -17,25 +17,34 @@
 
   <div id="fond-image"></div>
 
-  <!-- Zone contrôles des dés fixée en bas -->
-  <div id="dice-bar">
-    <div id="dice-controls">
-      <button onclick="ajouterDe('D4')">Ajouter D4</button>
-      <button onclick="ajouterDe('D6')">Ajouter D6</button>
-      <button onclick="ajouterDe('D8')">Ajouter D8</button>
-      <button onclick="ajouterDe('D10')">Ajouter D10</button>
-      <button onclick="ajouterDe('D12')">Ajouter D12</button>
-      <button onclick="ajouterDe('D20')">Ajouter D20</button>
-      <button onclick="lancerDes()">Lancer les dés</button>
-    </div>
+  <!-- Zone dés fixée en bas -->
+  <div class="zone-des" id="zone-des">
+    <div id="liste-des"></div>
 
-    <ul id="liste-des"></ul>
+    <div id="controls-des">
+      <select id="select-type-de">
+        <option value="D4">D4</option>
+        <option value="D6" selected>D6</option>
+        <option value="D8">D8</option>
+        <option value="D10">D10</option>
+        <option value="D12">D12</option>
+        <option value="D20">D20</option>
+      </select>
+
+      <select id="select-couleur-de">
+        <option value="noir" selected>Noir</option>
+        <option value="blanc">Blanc</option>
+        <option value="rouge">Rouge</option>
+      </select>
+
+      <button id="btn-ajouter-de">Ajouter dé</button>
+      <button id="btn-lancer-des">Lancer les dés</button>
+      <button id="btn-supprimer-tout">Supprimer tout</button>
+    </div>
   </div>
 
   <script src="js/zone.js"></script>
-
   <script>
-    // Afficher le bouton MJ uniquement pour le MJ
     const role = localStorage.getItem("currentRole");
     if (role === "MJ") {
       document.getElementById("btn-mj-page").style.display = "inline-block";
