@@ -1,82 +1,104 @@
-
-/* css/mj.css */
-
 body {
   font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: #f9f9f9;
-  color: #333;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-button {
-  cursor: pointer;
-  background-color: #007bff;
-  border: none;
+#top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
   color: white;
-  padding: 10px 16px;
-  margin: 10px 5px 20px 5px;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  padding: 10px 20px;
 }
 
-button:hover {
-  background-color: #0056b3;
+#top-bar h1 {
+  margin: 0;
+  font-size: 1.5em;
 }
 
-#images-container {
+#top-bar button {
+  padding: 8px 16px;
+  background-color: crimson;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#top-bar button:hover {
+  background-color: darkred;
+}
+
+section {
+  padding: 20px;
+}
+
+#drop-zone {
+  border-top: 2px solid #ccc;
+  margin-top: 20px;
+}
+
+#zone-images {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
-  justify-content: center;
-  margin-bottom: 30px;
+  margin-top: 15px;
 }
 
 .image-item {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
   padding: 10px;
-  width: 140px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  text-align: center;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .image-item img {
   max-width: 100%;
-  max-height: 90px;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  max-height: 100px;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
-.image-item input[type="text"] {
+.image-item input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 6px 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
+  padding: 5px;
   border-radius: 4px;
-  margin-bottom: 8px;
+  border: 1px solid #aaa;
 }
 
 .image-item button {
-  background-color: #dc3545;
-  padding: 6px 10px;
-  font-size: 14px;
-  margin: 0;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .image-item button:hover {
-  background-color: #a71d2a;
+  background-color: #9a0007;
 }
 
-#error-msg {
-  text-align: center;
-  font-weight: bold;
-  margin-top: 10px;
+#fiches-joueurs ul {
+  list-style: none;
+  padding: 0;
+}
+
+#fiches-joueurs li {
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  font-family: monospace;
 }

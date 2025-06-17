@@ -1,37 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Page MJ - Gestion des images</title>
+  <title>Page MJ</title>
   <link rel="stylesheet" href="css/mj.css" />
 </head>
 <body>
-  <h1>Page Maître du Jeu</h1>
+  <div id="top-bar">
+    <h1>Préparation MJ</h1>
+    <button id="btn-deconnexion">Se déconnecter</button>
+  </div>
 
-  <!-- Bouton unique pour ajouter une image -->
-  <button id="btn-add-image">Ajouter une image</button>
-  <input type="file" id="input-image" accept="image/*" style="display:none" />
+  <section id="drop-zone">
+    <h2>Ajouter une image</h2>
+    <input type="file" id="image-input" accept="image/*" />
+    <div id="zone-images" class="grid-images"></div>
+  </section>
 
-  <!-- Conteneur des images -->
-  <div id="images-container"></div>
-
-  <!-- Bouton retour zone -->
-  <button id="btn-retour-zone">Retour à la zone de jeu</button>
-
-  <p id="error-msg" style="color:red"></p>
+  <section id="fiches-joueurs">
+    <h2>Fiches des joueurs</h2>
+    <ul id="liste-fiches"></ul>
+  </section>
 
   <script src="js/mj.js"></script>
-  <script>
-    // Déclenche l'input file au clic du bouton
-    document.getElementById("btn-add-image").addEventListener("click", () => {
-      document.getElementById("input-image").click();
-    });
-
-    // Bouton retour à la zone de jeu
-    document.getElementById("btn-retour-zone").addEventListener("click", () => {
-      window.location.href = "zone.html";
-    });
-  </script>
 </body>
 </html>

@@ -9,11 +9,36 @@ const btnAjouter = document.getElementById("btn-ajouter-de");
 const btnLancer = document.getElementById("btn-lancer-des");
 const btnSupprimerTout = document.getElementById("btn-supprimer-tout");
 
+const role = localStorage.getItem("currentRole");
+
+// Affichage conditionnel des éléments MJ
+if (role === "MJ") {
+  document.getElementById("btn-mj-page").style.display = "inline-block";
+  document.getElementById("selecteur-fond").style.display = "flex";
+}
+
+document.getElementById("btn-mj-page").addEventListener("click", () => {
+  window.location.href = "mj.html";
+});
+
+document.getElementById("btn-fiche").addEventListener("click", () => {
+  window.location.href = "fiche.html";
+});
+
+document.getElementById("btn-deconnexion").addEventListener("click", () => {
+  localStorage.removeItem("currentUser");
+  localStorage.removeItem("currentRole");
+  window.location.href = "index.html";
+});
+
 let des = [];
 let fondActif = "";
 
 ws.addEventListener("open", () => {
   ws.send(JSON.stringify({ type: "getInitialState" }));
+  if (role === "MJ") {
+    ws.send(JSON.stringify({ type: "getImages" }));
+  }
 });
 
 ws.addEventListener("message", (event) => {
@@ -37,8 +62,18 @@ ws.addEventListener("message", (event) => {
       setBackgroundImage(fondActif);
       break;
 
-    default:
-      console.warn("Message inconnu:", data);
+    case "imagesList":
+      if (role === "MJ") {
+        const fondSelect = document.getElementById("fond-select");
+        fondSelect.innerHTML = "";
+        data.images.forEach((img, index) => {
+          const opt = document.createElement("option");
+          opt.value = img.url;
+          opt.textContent = `${index + 1} - ${img.nom}`;
+          fondSelect.appendChild(opt);
+        });
+      }
+      break;
   }
 });
 
@@ -49,9 +84,7 @@ function majListeDes() {
     const div = document.createElement("div");
     div.classList.add("de-item");
 
-    if (de.couleur) {
-      div.classList.add(`de-${de.couleur}`);
-    }
+    if (de.couleur) div.classList.add(`de-${de.couleur}`);
 
     const spanType = document.createElement("span");
     spanType.textContent = de.type;
@@ -70,7 +103,6 @@ function majListeDes() {
     div.appendChild(spanType);
     div.appendChild(spanResult);
     div.appendChild(btnSuppr);
-
     diceList.appendChild(div);
   });
 }
@@ -81,8 +113,6 @@ function setBackgroundImage(url) {
   zoneJeu.style.backgroundRepeat = "no-repeat";
   zoneJeu.style.backgroundPosition = "center";
 }
-
-// === ACTIONS ===
 
 btnAjouter.addEventListener("click", () => {
   const type = selectType.value;
@@ -100,4 +130,12 @@ btnSupprimerTout.addEventListener("click", () => {
 
 function supprimerDe(index) {
   ws.send(JSON.stringify({ type: "removeDice", index }));
+}
+
+if (role === "MJ") {
+  const fondSelect = document.getElementById("fond-select");
+  fondSelect.addEventListener("change", () => {
+    const url = fondSelect.value;
+    ws.send(JSON.stringify({ type: "setFond", fondActif: url }));
+  });
 }
