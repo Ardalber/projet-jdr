@@ -11,7 +11,6 @@ const btnSupprimerTout = document.getElementById("btn-supprimer-tout");
 
 const role = localStorage.getItem("currentRole");
 
-// Affichage conditionnel des éléments MJ (insensible à la casse)
 if (role && role.toLowerCase() === "mj") {
   document.getElementById("btn-mj-page").style.display = "inline-block";
   document.getElementById("selecteur-fond").style.display = "flex";
@@ -72,6 +71,13 @@ ws.addEventListener("message", (event) => {
           opt.textContent = `${index + 1} - ${img.nom}`;
           fondSelect.appendChild(opt);
         });
+
+        // ✅ Forcer l'application du premier fond si présent
+        if (fondSelect.options.length > 0) {
+          fondSelect.selectedIndex = 0;
+          const url = fondSelect.value;
+          ws.send(JSON.stringify({ type: "setFond", fondActif: url }));
+        }
       }
       break;
   }
