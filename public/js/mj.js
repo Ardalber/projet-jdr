@@ -87,3 +87,6 @@ document.getElementById("btn-deconnexion").addEventListener("click", () => {
   localStorage.removeItem("currentRole");
   window.location.href = "index.html";
 });
+document.getElementById("btn-retour-zone").addEventListener("click", () => {
+  window.location.href = "zone.html";
+});
