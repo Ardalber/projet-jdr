@@ -1,64 +1,71 @@
-const comptesListDiv = document.getElementById("comptes-list");
-const btnZoneJeu = document.getElementById("btn-zone-jeu");
 
-function chargerComptes() {
-  const comptes = JSON.parse(localStorage.getItem("comptes") || "{}");
-  comptesListDiv.innerHTML = "";
+document.addEventListener("DOMContentLoaded", () => {
+  const imageInput = document.getElementById("image-input");
+  const imageList = document.getElementById("image-list");
+  const imageForm = document.getElementById("image-form");
 
-  if (Object.keys(comptes).length === 0) {
-    comptesListDiv.textContent = "Aucun compte trouvé.";
-    return;
+  function chargerImages() {
+    fetch("/api/zoneImages")
+      .then(res => res.json())
+      .then(images => {
+        imageList.innerHTML = "";
+        images.forEach((img, index) => {
+          const div = document.createElement("div");
+          div.className = "image-item";
+
+          const image = document.createElement("img");
+          image.src = img.src;
+          image.alt = img.nom || `Image ${index + 1}`;
+
+          const input = document.createElement("input");
+          input.type = "text";
+          input.value = img.nom || `Image ${index + 1}`;
+          input.onchange = () => renommerImage(img.src, input.value);
+
+          const supprimer = document.createElement("button");
+          supprimer.textContent = "Supprimer";
+          supprimer.onclick = () => supprimerImage(img.src);
+
+          div.appendChild(image);
+          div.appendChild(input);
+          div.appendChild(supprimer);
+          imageList.appendChild(div);
+        });
+      });
   }
 
-  Object.entries(comptes).forEach(([pseudo]) => {
-    const div = document.createElement("div");
-    div.className = "compte-item";
-    div.innerHTML = `
-      <strong>${pseudo}</strong>
-      <button class="btn-supprimer" data-pseudo="${pseudo}">Supprimer</button>
-    `;
-    comptesListDiv.appendChild(div);
-  });
+  function renommerImage(src, nom) {
+    fetch("/api/images", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ src, nom }),
+    }).then(() => chargerImages());
+  }
 
-  document.querySelectorAll(".btn-supprimer").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const pseudoASupprimer = btn.dataset.pseudo;
-      if (confirm(`Confirmer la suppression du compte "${pseudoASupprimer}" ?`)) {
-        supprimerCompte(pseudoASupprimer);
-      }
+  function supprimerImage(src) {
+    fetch("/api/images", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ src }),
+    }).then(() => chargerImages());
+  }
+
+  imageForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const file = imageInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch("/api/images", {
+      method: "POST",
+      body: formData,
+    }).then(() => {
+      imageInput.value = "";
+      chargerImages();
     });
   });
-}
 
-function supprimerCompte(pseudo) {
-  const comptes = JSON.parse(localStorage.getItem("comptes") || "{}");
-  if (comptes[pseudo]) {
-    delete comptes[pseudo];
-    localStorage.setItem("comptes", JSON.stringify(comptes));
-    chargerComptes();
-  }
-}
-
-btnZoneJeu.addEventListener("click", () => {
-  window.location.href = "zone.html";
+  chargerImages();
 });
-
-const socket = new WebSocket(`ws://${window.location.host}`);
-
-socket.addEventListener("message", (event) => {
-  let data;
-  try {
-    data = JSON.parse(event.data);
-  } catch (e) {
-    console.error("Erreur JSON WebSocket :", e);
-    return;
-  }
-
-  if (data.type === "comptes-mise-a-jour") {
-    console.log("Mise à jour des comptes reçue");
-    chargerComptes();
-  }
-});
-
-// Chargement initial
-chargerComptes();
