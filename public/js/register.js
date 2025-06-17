@@ -25,18 +25,19 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
-  // Ajouter le compte
-  comptes[pseudo] = {
-    password: password,
-    role: role,
-  };
-
+  comptes[pseudo] = { password, role };
   localStorage.setItem("comptes", JSON.stringify(comptes));
 
-  // Connexion directe après inscription
+  // Notifier le serveur WebSocket pour mise à jour
+  const socket = new WebSocket(`ws://${window.location.host}`);
+  socket.addEventListener("open", () => {
+    socket.send(JSON.stringify({ type: "comptes-mise-a-jour" }));
+    socket.close();
+  });
+
   localStorage.setItem("currentUser", pseudo);
   localStorage.setItem("currentRole", role);
 
-  // Rediriger vers fiche perso
+  // Rediriger vers fiche perso (ou zone de jeu)
   window.location.href = "fiche.html";
 });

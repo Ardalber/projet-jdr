@@ -1,122 +1,61 @@
 body {
-  background: #1b1b1b;
-  color: white;
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
-}
-
-.container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: auto;
+  padding: 20px;
+  color: #333;
 }
 
 h1, h2 {
-  color: #4caf50;
-  margin-bottom: 15px;
-}
-
-#zone-upload {
-  margin-bottom: 40px;
-}
-
-#btn-add-image {
-  background-color: #4caf50;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 15px;
-}
-
-#btn-add-image:hover {
-  background-color: #45a049;
-}
-
-#images-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 20px;
-}
-
-.image-item {
-  position: relative;
-  background: #000;
-  border: 1px solid #444;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.image-item img {
-  width: 100%;
-  display: block;
-  border-bottom: 1px solid #333;
-}
-
-.image-item input {
-  width: 100%;
-  padding: 5px;
-  border: none;
-  border-top: 1px solid #333;
-  background: #222;
-  color: white;
   text-align: center;
 }
 
-.image-item button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: crimson;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-#zone-fiches {
-  background: #2c2c2c;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-#fiches-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 15px;
-}
-
-.fiche-joueur {
-  background: #1e1e1e;
+#comptes-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
   padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #444;
-  font-size: 0.85rem;
-  line-height: 1.2;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  border-radius: 8px;
+  background: #f9f9f9;
 }
 
-.fiche-joueur strong {
-  display: block;
-  margin-bottom: 6px;
-  color: #4caf50;
-  font-weight: bold;
+.compte-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #ddd;
 }
 
-.btn-zone {
-  background-color: #2196f3;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+.compte-item button {
+  background: #d32f2f;
   color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-bottom: 20px;
   font-weight: bold;
-  font-size: 1rem;
+  user-select: none;
+  transition: background-color 0.3s ease;
 }
 
-.btn-zone:hover {
+.compte-item button:hover {
+  background: #9a0007;
+}
+
+#btn-zone-jeu {
+  display: block;
+  margin: 0 auto 20px auto;
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+#btn-zone-jeu:hover {
   background-color: #1976d2;
 }

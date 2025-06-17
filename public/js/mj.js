@@ -1,108 +1,64 @@
-const btnAddImage = document.getElementById("btn-add-image");
-const fileInput = document.getElementById("file-input");
-const imagesGrid = document.getElementById("images-grid");
-const fichesList = document.getElementById("fiches-list");
+const comptesListDiv = document.getElementById("comptes-list");
 const btnZoneJeu = document.getElementById("btn-zone-jeu");
 
-let images = [];
+function chargerComptes() {
+  const comptes = JSON.parse(localStorage.getItem("comptes") || "{}");
+  comptesListDiv.innerHTML = "";
 
-async function loadImages() {
-  const res = await fetch("/api/zoneImages");
-  images = await res.json();
-  displayImages();
-}
+  if (Object.keys(comptes).length === 0) {
+    comptesListDiv.textContent = "Aucun compte trouvé.";
+    return;
+  }
 
-async function saveImages() {
-  await fetch("/api/zoneImages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(images),
-  });
-}
-
-function displayImages() {
-  imagesGrid.innerHTML = "";
-
-  images.forEach((img, index) => {
+  Object.entries(comptes).forEach(([pseudo]) => {
     const div = document.createElement("div");
-    div.className = "image-item";
-
-    const image = document.createElement("img");
-    image.src = img.src;
-    image.style.cursor = "pointer";
-    image.title = "Cliquez pour appliquer cette scène";
-    image.onclick = () => sendMessageFond(img.src);
-
-    const input = document.createElement("input");
-    input.value = img.nom;
-    input.addEventListener("input", () => {
-      images[index].nom = input.value;
-      saveImages();
-    });
-
-    const btn = document.createElement("button");
-    btn.innerText = "🗑";
-    btn.onclick = () => {
-      images.splice(index, 1);
-      saveImages();
-      displayImages();
-    };
-
-    div.appendChild(image);
-    div.appendChild(input);
-    div.appendChild(btn);
-    imagesGrid.appendChild(div);
-  });
-}
-
-btnAddImage.addEventListener("click", () => {
-  fileInput.click();
-});
-
-fileInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = async (event) => {
-    const num = images.length + 1;
-    images.push({ src: event.target.result, nom: `Scène ${num}` });
-    await saveImages();
-    displayImages();
-    fileInput.value = "";
-  };
-  reader.readAsDataURL(file);
-});
-
-function sendMessageFond(url) {
-  const socket = new WebSocket(`ws://${window.location.host}`);
-  socket.addEventListener("open", () => {
-    socket.send(JSON.stringify({ type: "fond", url }));
-    socket.close();
-  });
-}
-
-function displayFiches() {
-  const fiches = JSON.parse(localStorage.getItem("fiches") || "{}");
-  fichesList.innerHTML = "";
-
-  Object.entries(fiches).forEach(([pseudo, fiche]) => {
-    const div = document.createElement("div");
-    div.className = "fiche-joueur";
+    div.className = "compte-item";
     div.innerHTML = `
-      <strong>${pseudo}</strong><br>
-      Nom : ${fiche.nom || "?"}<br>
-      Race : ${fiche.race || "?"}<br>
-      Classe : ${fiche.classe || "?"}<br>
-      Description : ${fiche.description || "?"}
+      <strong>${pseudo}</strong>
+      <button class="btn-supprimer" data-pseudo="${pseudo}">Supprimer</button>
     `;
-    fichesList.appendChild(div);
+    comptesListDiv.appendChild(div);
   });
+
+  document.querySelectorAll(".btn-supprimer").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const pseudoASupprimer = btn.dataset.pseudo;
+      if (confirm(`Confirmer la suppression du compte "${pseudoASupprimer}" ?`)) {
+        supprimerCompte(pseudoASupprimer);
+      }
+    });
+  });
+}
+
+function supprimerCompte(pseudo) {
+  const comptes = JSON.parse(localStorage.getItem("comptes") || "{}");
+  if (comptes[pseudo]) {
+    delete comptes[pseudo];
+    localStorage.setItem("comptes", JSON.stringify(comptes));
+    chargerComptes();
+  }
 }
 
 btnZoneJeu.addEventListener("click", () => {
   window.location.href = "zone.html";
 });
 
-loadImages();
-displayFiches();
+const socket = new WebSocket(`ws://${window.location.host}`);
+
+socket.addEventListener("message", (event) => {
+  let data;
+  try {
+    data = JSON.parse(event.data);
+  } catch (e) {
+    console.error("Erreur JSON WebSocket :", e);
+    return;
+  }
+
+  if (data.type === "comptes-mise-a-jour") {
+    console.log("Mise à jour des comptes reçue");
+    chargerComptes();
+  }
+});
+
+// Chargement initial
+chargerComptes();
