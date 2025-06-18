@@ -1,14 +1,1 @@
-{
-  "admin": {
-    "password": "admin",
-    "role": "mj"
-  },
-  "joueur1": {
-    "password": "azerty",
-    "role": "joueur"
-  },
-  "mjtest": {
-    "password": "testmj",
-    "role": "mj"
-  }
-}
+{}
