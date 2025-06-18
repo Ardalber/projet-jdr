@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <title>Inscription</title>
-  <link rel="stylesheet" href="/css/style.css" />
+<link rel="stylesheet" href="/css/register.css" />
 </head>
 <body>
-  <h1>Créer un compte</h1>
-  <form id="register-form">
-    <label>Pseudo: <input type="text" name="pseudo" required /></label><br/>
-    <label>Mot de passe: <input type="password" name="password" required /></label><br/>
-    <label>Rôle:
+  <div class="container">
+    <h1>Créer un compte</h1>
+    <form id="register-form">
+      <input type="text" name="pseudo" placeholder="Pseudo" required />
+      <input type="password" name="password" placeholder="Mot de passe" required />
       <select name="role" required>
         <option value="joueur">Joueur</option>
         <option value="mj">MJ</option>
       </select>
-    </label><br/>
-    <button type="submit">Créer</button>
-  </form>
-  <p id="error-msg" style="color:red;"></p>
+      <button type="submit">Créer</button>
+    </form>
+    <p id="error-msg" style="color:red;"></p>
+  </div>
 
   <script src="../js/register.js"></script>
 </body>
