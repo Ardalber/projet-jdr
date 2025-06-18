@@ -76,14 +76,19 @@ ws.addEventListener("message", (event) => {
         const fondSelect = document.getElementById("fond-select");
         fondSelect.innerHTML = "";
         data.images.forEach((img, index) => {
+          // Log pour debug
+          console.log(`Image ${index + 1} : nom=${img.nom}, url=${img.url}`);
+
+          // Encodage URL pour éviter les problèmes d'affichage
+          const urlEncoded = encodeURI(img.url);
+
           const opt = document.createElement("option");
-          opt.value = img.url;
+          opt.value = urlEncoded;
           opt.textContent = `${index + 1} - ${img.nom}`;
           fondSelect.appendChild(opt);
         });
 
-        // Sélection automatique désactivée pour éviter conflits
-        // Le MJ choisira manuellement le fond
+        // Pas de sélection automatique ici pour éviter d'écraser un choix manuel
       }
       break;
   }
