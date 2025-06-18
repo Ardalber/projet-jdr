@@ -1,7 +1,7 @@
 const form = document.getElementById("register-form");
 const errorMsg = document.getElementById("error-msg");
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const pseudo = form.pseudo.value.trim();
@@ -13,32 +13,34 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
-  const comptes = JSON.parse(localStorage.getItem("comptes") || "{}");
-
-  if (pseudo in comptes) {
-    errorMsg.textContent = "Ce pseudo est déjà pris.";
-    return;
-  }
-
   if (pseudo.toLowerCase() === "admin") {
     errorMsg.textContent = "Le pseudo 'admin' est réservé.";
     return;
   }
 
-  comptes[pseudo] = { password, role };
-  localStorage.setItem("comptes", JSON.stringify(comptes));
+  try {
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ pseudo, password, role })
+    });
 
-  // WebSocket sécurisé (wss) si HTTPS
-  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  const socket = new WebSocket(`${protocol}://${window.location.host}`);
-  socket.addEventListener("open", () => {
-    socket.send(JSON.stringify({ type: "comptes-mise-a-jour" }));
-    socket.close();
-  });
+    const data = await res.json();
+    if (!data.success) {
+      errorMsg.textContent = data.message;
+      return;
+    }
 
-  localStorage.setItem("currentUser", pseudo);
-  localStorage.setItem("currentRole", role);
+    // Sauvegarder l’utilisateur courant localement
+    localStorage.setItem("currentUser", pseudo);
+    localStorage.setItem("currentRole", role);
 
-  // Rediriger vers la fiche personnage
-  window.location.href = "fiche.html";
+    // Rediriger vers la fiche de personnage
+    window.location.href = "fiche.html";
+  } catch (err) {
+    console.error(err);
+    errorMsg.textContent = "Erreur serveur.";
+  }
 });

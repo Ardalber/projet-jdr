@@ -10,27 +10,61 @@ const wss = new WebSocket.Server({ server });
 
 const publicDir = path.join(__dirname, "public");
 const uploadDir = path.join(publicDir, "uploads");
+const dataDir = path.join(__dirname, "data");
+const comptesPath = path.join(dataDir, "comptes.json");
+
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
+}
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+if (!fs.existsSync(comptesPath)) {
+  fs.writeFileSync(comptesPath, "{}");
 }
 
 app.use(express.static(publicDir));
 app.use(express.json({ limit: '10mb' }));
 
+// 🔐 Route d'inscription
+app.post("/api/register", (req, res) => {
+  const { pseudo, password, role } = req.body;
+
+  if (!pseudo || !password || !role) {
+    return res.json({ success: false, message: "Champs manquants." });
+  }
+
+  let comptes = {};
+  try {
+    const raw = fs.readFileSync(comptesPath, "utf-8");
+    comptes = JSON.parse(raw);
+  } catch {
+    comptes = {};
+  }
+
+  if (comptes[pseudo]) {
+    return res.json({ success: false, message: "Ce pseudo est déjà pris." });
+  }
+
+  comptes[pseudo] = { password, role };
+
+  fs.writeFileSync(comptesPath, JSON.stringify(comptes, null, 2), "utf-8");
+
+  res.json({ success: true });
+});
+
 // Données en mémoire
 let joueurs = [];
-let des = []; // { type, couleur, valeur }
+let des = [];
 let playerActive = null;
 let fondActif = "";
-let images = []; // { nom, url }
+let images = [];
 
-// ✅ Image par défaut toujours présente
 images.push({
   nom: "Image par défaut",
   url: "/uploads/default.jpg"
 });
 
-// Diffuser à tous
 function broadcast(data) {
   const message = JSON.stringify(data);
   wss.clients.forEach(client => {
@@ -145,7 +179,6 @@ wss.on("connection", (ws) => {
   });
 });
 
-// Fonction pour déterminer le max d’un type de dé
 function getMax(type) {
   switch (type) {
     case "D4": return 4;
@@ -158,12 +191,10 @@ function getMax(type) {
   }
 }
 
-// Pour autoriser le MJ (à personnaliser si besoin)
 function isMJ(ws) {
   return true;
 }
 
-// Sauvegarde image en base64 sur disque
 function saveImage(filename, base64Data) {
   return new Promise((resolve, reject) => {
     const matches = base64Data.match(/^data:(image\/\w+);base64,(.+)$/);
