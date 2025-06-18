@@ -82,12 +82,8 @@ ws.addEventListener("message", (event) => {
           fondSelect.appendChild(opt);
         });
 
-        // Sélection automatique du premier fond
-        if (fondSelect.options.length > 0) {
-          fondSelect.selectedIndex = 0;
-          const url = fondSelect.value;
-          ws.send(JSON.stringify({ type: "setFond", fondActif: url }));
-        }
+        // Sélection automatique désactivée pour éviter conflits
+        // Le MJ choisira manuellement le fond
       }
       break;
   }
@@ -148,6 +144,7 @@ function supprimerDe(index) {
   ws.send(JSON.stringify({ type: "removeDice", index }));
 }
 
+// Sélection manuelle d’un fond par le MJ
 if (role && role.toLowerCase() === "mj") {
   const fondSelect = document.getElementById("fond-select");
   fondSelect.addEventListener("change", () => {
