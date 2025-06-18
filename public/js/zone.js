@@ -76,12 +76,9 @@ ws.addEventListener("message", (event) => {
         const fondSelect = document.getElementById("fond-select");
         fondSelect.innerHTML = "";
         data.images.forEach((img, index) => {
-          // Log pour debug
           console.log(`Image ${index + 1} : nom=${img.nom}, url=${img.url}`);
 
-          // Encodage URL pour éviter les problèmes d'affichage
-          const urlEncoded = encodeURI(img.url);
-
+          const urlEncoded = encodeURIComponent(img.url);
           const opt = document.createElement("option");
           opt.value = urlEncoded;
           opt.textContent = `${index + 1} - ${img.nom}`;
@@ -125,7 +122,12 @@ function majListeDes() {
 }
 
 function setBackgroundImage(url) {
-  zoneJeu.style.backgroundImage = url ? `url(${url})` : "";
+  if (!url) {
+    zoneJeu.style.backgroundImage = "";
+    return;
+  }
+  const decodedUrl = decodeURIComponent(url);
+  zoneJeu.style.backgroundImage = `url(${decodedUrl})`;
   zoneJeu.style.backgroundSize = "contain";
   zoneJeu.style.backgroundRepeat = "no-repeat";
   zoneJeu.style.backgroundPosition = "center";
