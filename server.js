@@ -223,14 +223,20 @@ function isMJ(ws) {
   return true; // à sécuriser plus tard
 }
 
+function sanitizeFilename(name) {
+  return name.normalize('NFD').replace(/[\u0300-\u036f]/g, '') // supprimer accents
+             .replace(/[^a-zA-Z0-9.-]/g, '_');                 // remplacer espaces et autres par _
+}
+
 function saveImage(filename, base64Data) {
   return new Promise((resolve, reject) => {
-    const matches = base64Data.match(/^data:(image\/\w+);base64,(.+)$/); // ✅ corrigé ici
+    const matches = base64Data.match(/^data:(image\/\w+);base64,(.+)$/);
     if (!matches) return reject(new Error("Format base64 invalide"));
     const ext = matches[1].split("/")[1];
     const data = matches[2];
     const buffer = Buffer.from(data, "base64");
-    const uniqueName = `${Date.now()}-${filename}`;
+    const safeName = sanitizeFilename(filename);
+    const uniqueName = `${Date.now()}-${safeName}`;
     const filepath = path.join(uploadDir, uniqueName);
     fs.writeFile(filepath, buffer, (err) => {
       if (err) return reject(err);
