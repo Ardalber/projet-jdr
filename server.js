@@ -225,7 +225,7 @@ function isMJ(ws) {
 
 function saveImage(filename, base64Data) {
   return new Promise((resolve, reject) => {
-    const matches = base64Data.match(/^data:(image\/\\w+);base64,(.+)$/);
+    const matches = base64Data.match(/^data:(image\/\w+);base64,(.+)$/); // ✅ corrigé ici
     if (!matches) return reject(new Error("Format base64 invalide"));
     const ext = matches[1].split("/")[1];
     const data = matches[2];
