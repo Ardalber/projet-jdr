@@ -1,9 +1,11 @@
+const protocol = location.protocol === "https:" ? "wss" : "ws";
+const ws = new WebSocket(`${protocol}://${location.host}`);
+
 const imageInput = document.getElementById("image-input");
 const imagesContainer = document.getElementById("zone-images");
 const listeFiches = document.getElementById("liste-fiches");
 const listeComptes = document.getElementById("liste-comptes");
 
-const ws = new WebSocket(`wss://${window.location.host}`);
 let images = [];
 
 ws.addEventListener("open", () => {

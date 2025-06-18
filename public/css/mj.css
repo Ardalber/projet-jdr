@@ -2,16 +2,18 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  background-color: #121212;
+  color: #f5f5f5;
 }
 
 #top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #333;
+  background-color: #1e1e1e;
   color: white;
   padding: 10px 20px;
+  border-bottom: 2px solid #333;
 }
 
 #top-bar h1 {
@@ -21,16 +23,16 @@ body {
 
 #top-bar button {
   padding: 8px 16px;
-  background-color: crimson;
+  background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
 }
 
 #top-bar button:hover {
-  background-color: darkred;
+  background-color: #45a049;
 }
 
 section {
@@ -38,7 +40,7 @@ section {
 }
 
 #drop-zone {
-  border-top: 2px solid #ccc;
+  border-top: 2px solid #444;
   margin-top: 20px;
 }
 
@@ -50,8 +52,8 @@ section {
 }
 
 .image-item {
-  background-color: white;
-  border: 1px solid #ccc;
+  background-color: #1e1e1e;
+  border: 1px solid #444;
   border-radius: 10px;
   padding: 10px;
   width: 180px;
@@ -59,7 +61,7 @@ section {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .image-item img {
@@ -71,17 +73,19 @@ section {
 
 .image-item input {
   width: 100%;
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2c2c2c;
+  color: #f5f5f5;
 }
 
 .image-item button {
   background-color: #d32f2f;
   color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -89,16 +93,32 @@ section {
   background-color: #9a0007;
 }
 
-#fiches-joueurs ul {
-  list-style: none;
-  padding: 0;
+#comptes-joueurs,
+#fiches-joueurs {
+  margin-top: 30px;
 }
 
+#liste-comptes div,
 #fiches-joueurs li {
-  padding: 6px 10px;
-  background: #fff;
-  border: 1px solid #ccc;
-  margin-bottom: 5px;
-  border-radius: 4px;
-  font-family: monospace;
+  padding: 10px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#liste-comptes button {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#liste-comptes button:hover {
+  background-color: #9a0007;
 }
