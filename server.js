@@ -26,7 +26,7 @@ if (!fs.existsSync(comptesPath)) {
 app.use(express.static(publicDir));
 app.use(express.json({ limit: '10mb' }));
 
-// 🔐 Route d'inscription
+// 🔐 Enregistrement d'un compte
 app.post("/api/register", (req, res) => {
   const { pseudo, password, role } = req.body;
 
@@ -36,8 +36,7 @@ app.post("/api/register", (req, res) => {
 
   let comptes = {};
   try {
-    const raw = fs.readFileSync(comptesPath, "utf-8");
-    comptes = JSON.parse(raw);
+    comptes = JSON.parse(fs.readFileSync(comptesPath, "utf-8"));
   } catch {
     comptes = {};
   }
@@ -47,13 +46,42 @@ app.post("/api/register", (req, res) => {
   }
 
   comptes[pseudo] = { password, role };
-
   fs.writeFileSync(comptesPath, JSON.stringify(comptes, null, 2), "utf-8");
 
   res.json({ success: true });
 });
 
-// Données en mémoire
+// 🔍 Récupérer tous les comptes
+app.get("/api/comptes", (req, res) => {
+  try {
+    const comptes = JSON.parse(fs.readFileSync(comptesPath, "utf-8"));
+    res.json({ success: true, comptes });
+  } catch {
+    res.json({ success: false, message: "Impossible de lire les comptes." });
+  }
+});
+
+// ❌ Supprimer un compte
+app.delete("/api/comptes/:pseudo", (req, res) => {
+  const pseudo = req.params.pseudo;
+
+  try {
+    const comptes = JSON.parse(fs.readFileSync(comptesPath, "utf-8"));
+    if (!comptes[pseudo]) {
+      return res.json({ success: false, message: "Compte introuvable." });
+    }
+
+    delete comptes[pseudo];
+    fs.writeFileSync(comptesPath, JSON.stringify(comptes, null, 2), "utf-8");
+
+    res.json({ success: true });
+  } catch {
+    res.json({ success: false, message: "Erreur suppression compte." });
+  }
+});
+
+// ------------------- WEBSOCKET ET LOGIQUE DE JEU ------------------
+
 let joueurs = [];
 let des = [];
 let playerActive = null;
@@ -144,7 +172,7 @@ wss.on("connection", (ws) => {
             images.push({ nom: data.name, url });
             broadcast({ type: "imagesList", images });
           })
-          .catch(err => {
+          .catch(() => {
             ws.send(JSON.stringify({ type: "error", message: "Erreur upload image." }));
           });
         break;
@@ -192,12 +220,12 @@ function getMax(type) {
 }
 
 function isMJ(ws) {
-  return true;
+  return true; // à sécuriser plus tard
 }
 
 function saveImage(filename, base64Data) {
   return new Promise((resolve, reject) => {
-    const matches = base64Data.match(/^data:(image\/\w+);base64,(.+)$/);
+    const matches = base64Data.match(/^data:(image\/\\w+);base64,(.+)$/);
     if (!matches) return reject(new Error("Format base64 invalide"));
     const ext = matches[1].split("/")[1];
     const data = matches[2];

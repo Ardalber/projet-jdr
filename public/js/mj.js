@@ -1,14 +1,14 @@
 const imageInput = document.getElementById("image-input");
 const imagesContainer = document.getElementById("zone-images");
 const listeFiches = document.getElementById("liste-fiches");
+const listeComptes = document.getElementById("liste-comptes");
 
 const ws = new WebSocket(`wss://${window.location.host}`);
-
 let images = [];
 
 ws.addEventListener("open", () => {
   ws.send(JSON.stringify({ type: "getImages" }));
-  ws.send(JSON.stringify({ type: "getFiches" })); // si tu gères les fiches plus tard
+  ws.send(JSON.stringify({ type: "getFiches" }));
 });
 
 ws.addEventListener("message", (event) => {
@@ -24,6 +24,7 @@ ws.addEventListener("message", (event) => {
   }
 });
 
+// ✅ Upload image
 imageInput.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -41,10 +42,11 @@ imageInput.addEventListener("change", async (e) => {
   reader.readAsDataURL(file);
 });
 
+// ✅ Affichage des images
 function afficherImages() {
   imagesContainer.innerHTML = "";
   images.forEach((img, index) => {
-    if (img.url === "/uploads/default.jpg") return; // ne pas afficher l'image par défaut
+    if (img.url === "/uploads/default.jpg") return;
 
     const div = document.createElement("div");
     div.classList.add("image-item");
@@ -74,6 +76,7 @@ function afficherImages() {
   });
 }
 
+// ✅ Affichage des fiches
 function afficherFiches(fiches) {
   listeFiches.innerHTML = "";
   Object.entries(fiches).forEach(([pseudo, fiche]) => {
@@ -82,6 +85,54 @@ function afficherFiches(fiches) {
     listeFiches.appendChild(li);
   });
 }
+
+// ✅ Affichage des comptes et suppression
+async function chargerComptes() {
+  listeComptes.innerHTML = "Chargement...";
+  try {
+    const res = await fetch("/api/comptes");
+    const data = await res.json();
+
+    if (!data.success) {
+      listeComptes.innerHTML = "<p>Erreur chargement comptes.</p>";
+      return;
+    }
+
+    const comptes = data.comptes;
+    listeComptes.innerHTML = "";
+
+    for (const pseudo in comptes) {
+      const info = comptes[pseudo];
+      const ligne = document.createElement("div");
+
+      const bouton = document.createElement("button");
+      bouton.textContent = "❌";
+      bouton.style.marginLeft = "10px";
+      bouton.onclick = async () => {
+        if (confirm(`Supprimer le compte "${pseudo}" ?`)) {
+          const res = await fetch(`/api/comptes/${encodeURIComponent(pseudo)}`, {
+            method: "DELETE",
+          });
+          const resultat = await res.json();
+          if (resultat.success) {
+            chargerComptes();
+          } else {
+            alert("Erreur : " + resultat.message);
+          }
+        }
+      };
+
+      ligne.innerHTML = `<strong>${pseudo}</strong> – ${info.role}`;
+      ligne.appendChild(bouton);
+      listeComptes.appendChild(ligne);
+    }
+  } catch (err) {
+    console.error(err);
+    listeComptes.innerHTML = "<p>Erreur serveur.</p>";
+  }
+}
+
+chargerComptes();
 
 // ✅ Bouton déconnexion
 document.getElementById("btn-deconnexion").addEventListener("click", () => {
