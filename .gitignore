@@ -1,19 +1,42 @@
-# Node modules
+# dépendances reconstruisibles
 node_modules/
 
-# Données locales (simulateurs JSON)
+# fichiers d'environnement (ne pas versionner les secrets / configs locales)
+.env
+.env.local
+.env.*.local
+
+# données locales (simulateurs JSON) — garder si ce sont des fichiers de dev uniquement
 data/*.json
 
-# Fichiers logs
+# logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
-# Dossiers systèmes
+# sorties de build / cache
+dist/
+build/
+coverage/
+.cache/
+.tmp/
+
+# fichiers système
 .DS_Store
 Thumbs.db
 
-# Fichiers temporaires éditeur
+# fichiers temporaires éditeur
 *.swp
 *.tmp
 
-# Configurations locales VSCode
+# configs d'IDE / éditeur
 .vscode/
+.idea/
+
+# tarballs npm
+*.tgz
+
+# Yarn Plug'n'Play
+.pnp/
+.pnp.js
