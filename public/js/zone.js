@@ -30,9 +30,7 @@ document.getElementById("btn-mj-page").addEventListener("click", () => {
   window.location.href = "mj.html";
 });
 
-document.getElementById("btn-fiche").addEventListener("click", () => {
-  window.location.href = "fiche.html";
-});
+// Suppression de tout ce qui concernait btn-fiche
 
 document.getElementById("btn-deconnexion").addEventListener("click", () => {
   localStorage.removeItem("currentUser");

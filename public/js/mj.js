@@ -3,14 +3,13 @@ const ws = new WebSocket(`${protocol}://${location.host}`);
 
 const imageInput = document.getElementById("image-input");
 const imagesContainer = document.getElementById("zone-images");
-const listeFiches = document.getElementById("liste-fiches");
 const listeComptes = document.getElementById("liste-comptes");
 
 let images = [];
 
 ws.addEventListener("open", () => {
   ws.send(JSON.stringify({ type: "getImages" }));
-  ws.send(JSON.stringify({ type: "getFiches" }));
+  // Suppression de ws.send getFiches (fiches perso)
 });
 
 ws.addEventListener("message", (event) => {
@@ -20,9 +19,7 @@ ws.addEventListener("message", (event) => {
       images = data.images || [];
       afficherImages();
       break;
-    case "fichesList":
-      afficherFiches(data.fiches);
-      break;
+    // Suppression de la gestion fichesList
   }
 });
 
@@ -75,16 +72,6 @@ function afficherImages() {
     div.appendChild(deleteBtn);
 
     imagesContainer.appendChild(div);
-  });
-}
-
-// ✅ Affichage des fiches
-function afficherFiches(fiches) {
-  listeFiches.innerHTML = "";
-  Object.entries(fiches).forEach(([pseudo, fiche]) => {
-    const li = document.createElement("li");
-    li.textContent = `${pseudo} : ${JSON.stringify(fiche)}`;
-    listeFiches.appendChild(li);
   });
 }
 

@@ -28,6 +28,6 @@ form.addEventListener("submit", (e) => {
   localStorage.setItem("currentUser", pseudo);
   localStorage.setItem("currentRole", comptes[pseudo].role);
 
-  // Rediriger vers fiche perso
-  window.location.href = "fiche.html";
+  // Rediriger vers la zone de jeu ou autre page principale
+  window.location.href = "zone.html";
 });

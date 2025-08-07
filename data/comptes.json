@@ -1,1 +1,14 @@
-{}
+{
+  "aaa": {
+    "password": "aaa",
+    "role": "joueur"
+  },
+  "ss": {
+    "password": "ss",
+    "role": "joueur"
+  },
+  "sss": {
+    "password": "sss",
+    "role": "mj"
+  }
+}
