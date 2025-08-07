@@ -37,8 +37,8 @@ form.addEventListener("submit", async (e) => {
     localStorage.setItem("currentUser", pseudo);
     localStorage.setItem("currentRole", role);
 
-    // Rediriger vers la fiche de personnage
-    window.location.href = "fiche.html";
+    // Rediriger vers la zone de jeu
+    window.location.href = "zone.html";
   } catch (err) {
     console.error(err);
     errorMsg.textContent = "Erreur serveur.";
